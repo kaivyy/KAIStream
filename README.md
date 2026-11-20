@@ -1,146 +1,236 @@
-<p align="left">
-  <img src="public/favicon.svg" width="56" height="56" alt="Ikon KAIStream" />
+<p align="center">
+  <img src="public/favicon.svg" width="80" height="80" alt="Logo KAIStream" />
 </p>
 
-# KAIStream
-
-Peta atlas interaktif dan simulasi deterministik pergerakan kereta api di Pulau Jawa untuk jaringan PT Kereta Api Indonesia (`1067 mm`) serta Kereta Cepat Whoosh PT KCIC (`1435 mm`) berbasis Grafik Perjalanan Kereta Api (GAPEKA) di zona waktu WIB (`UTC+7`).
-
-> [!NOTE]
-> Posisi kereta di KAIStream dihitung melalui interpolasi jadwal referensi GAPEKA terhadap geometri rel OpenStreetMap, bukan telemetri GPS waktu nyata. Proyek ini bersifat independen dan tidak berafiliasi dengan PT Kereta Api Indonesia (Persero), PT KAI Commuter, maupun PT Kereta Cepat Indonesia China (KCIC).
-
-![Tampilan Peta Pulau Jawa di KAIStream](docs/images/overview-light.png)
-
-## Cakupan Dataset Terverifikasi
-
-Data statis pada [`public/data/`](public/data/) dibangun dari ekstraksi jaringan rel OpenStreetMap Pulau Jawa serta jadwal resmi GAPEKA Kemenhub DJKA (`KP-DJKA 116 Tahun 2026`, `KP-DJKA 224 Tahun 2024`, dan `KP-DJKA 2 Tahun 2025`):
-
-| Metrik Dataset | Nilai Terverifikasi | Keterangan |
-| :--- | ---: | :--- |
-| Provinsi tercakup | `6` | Banten, DKI Jakarta, Jawa Barat, Jawa Tengah, DI Yogyakarta, Jawa Timur |
-| Total perjalanan harian | `2.490` | Antarkota, Commuter Line, Kereta Cepat Whoosh, Lokal, dan Bandara |
-| Perjalanan Kereta Cepat Whoosh | `62` | `G1003` s.d. `G1064` relasi Halim, Karawang, Padalarang, Tegalluar Summarecon |
-| Titik waktu lintas langsung (`Ls`) | `13.215` | Checkpoint waktu stasiun non-berhenti untuk akurasi kecepatan per petak |
-| Stasiun terpetakan | `461` | Termasuk `111` stasiun utama dan hub transit antarmoda Padalarang (`PDL`) |
-| Segmen rel operasional | `11.317` | Dari `12.244` total segmen rel Pulau Jawa (`1.636` tunggal, `5.014` ganda, `1.004` tiga jalur, `3.663` empat jalur/DDT) |
-| Segmen rel cepat `1435 mm` | `316` | Jalur ganda terisolasi Halim s.d. Tegalluar (`130` segmen jembatan layang, `26` terowongan) |
-| Geometri koridor unik | `368` | Polilin rute tervalidasi dengan jarak kumulatif per titik |
-| Galat validasi jadwal & geometri | `0` | Diuji otomatis pada waktu build dan melalui rangkaian tes Vitest |
-
-## Galeri Tampilan
-
-| Koridor Kereta Cepat Whoosh (`1435 mm`) | Mode Peta Malam & Hub Transit Padalarang (`PDL`) |
-| :---: | :---: |
-| ![Koridor Whoosh Jakarta-Bandung](docs/images/whoosh-corridor.png) | ![Mode Gelap Stasiun Padalarang](docs/images/dark-mode.png) |
-| Pemisahan jalur ganda `1435 mm` berwarna merah dari jalur KAI `1067 mm`, lengkap dengan detail kecepatan `KCIC G1012` (`293 km/j`) dan status lintas langsung (`Ls`) Karawang. | Tampilan malam di sekitar Padalarang dan Bandung yang memperlihatkan keterhubungan jadwal Whoosh dengan KA Feeder Whoosh serta Commuter Line Bandung Raya. |
+<h1 align="center">KAIStream</h1>
 
 <p align="center">
-  <img src="docs/images/mobile-detail.png" width="320" alt="Tampilan Mobile KAIStream 360px" />
+  <strong>Peta atlas interaktif dan simulasi deterministik pergerakan kereta api di Pulau Jawa</strong>
 </p>
 
-## Kemampuan Utama
+<p align="center">
+  Memvisualisasikan jaringan rel ganda PT KAI (1067 mm) dan Kereta Cepat Whoosh PT KCIC (1435 mm) secara bersamaan berbasis jadwal resmi GAPEKA pada zona waktu WIB (UTC+7).
+</p>
 
-1. Mesin simulasi deterministik menghitung posisi, haluan (`bearing`), persentase progres, dan estimasi kecepatan setiap kereta pada 60 FPS menggunakan interpolasi polilin per petak (`piecewise`), kurva percepatan/pengereman stasiun, serta `13.215` titik lintas langsung (`Ls`).
-2. Graf jaringan rel memisahkan secara fisik dan visual jaringan KAI `1067 mm` (mengikuti aturan sepur kanan sesuai UU 23/2007 serta pemisahan 4 jalur KRL dan KAJJ pada koridor Double-Double Track Manggarai s.d. Bekasi) dari jaringan ganda `1435 mm` Kereta Cepat Whoosh (`G_whoosh_eb` lajur selatan arah Tegalluar dan `G_whoosh_wb` lajur utara arah Halim).
-3. Rangkaian kereta dirender sebagai 4 unit terartikulasi (1 lokomotif/kabin depan dan 3 kereta di belakangnya tanpa ekor garis) yang menekuk mengikuti kelengkungan rel secara geometris, dengan desain khusus CR400AF putih-merah untuk Whoosh.
-4. Kontrol Time Machine memungkinkan pemutaran waktu simulasi pada kecepatan `1x`, `5x`, `10x`, `20x`, `60x`, hingga `120x`, lompatan jam cepat, penggeseran manual sepanjang 24 jam WIB, serta penyaringan pola operasional (`Semua Jadwal`, `Hari Kerja`, `Akhir Pekan`).
-5. Pencari rute mendukung perjalanan langsung maupun transit 1 kali pindah kereta di seluruh Pulau Jawa, termasuk transit terpadu `Halim (HLM) -> Bandung (BD)` melalui `Padalarang (PDL)` yang menggabungkan Kereta Cepat Whoosh dengan KA Feeder Whoosh.
-6. Tiga pilihan peta dasar (`Standar` bergaya kertas kartografi, `Satelit` Esri World Imagery, dan `Topografi` Esri World Topo) dilengkapi opsi overlay radar curah hujan langsung dari RainViewer API.
-7. Permalink URL menyinkronkan koordinat kamera (`#map=zoom/lat/lon`), kereta terpilih (`?train=`), stasiun terpilih (`?station=`), gaya peta dasar (`?bm=`), dan status radar hujan (`?rain=1`) sehingga tautan dapat langsung dibagikan.
+<p align="center">
+  <a href="https://github.com/kaivyy/KAIStream/actions/workflows/ci.yml"><img src="https://github.com/kaivyy/KAIStream/actions/workflows/ci.yml/badge.svg" alt="Status CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/Lisensi-MIT-blue.svg" alt="Lisensi MIT" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.8-3178c6.svg?logo=typescript&logoColor=white" alt="TypeScript 5.8" /></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black" alt="React 19" /></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-6.4-646cff.svg?logo=vite&logoColor=white" alt="Vite 6.4" /></a>
+  <a href="https://maplibre.org/"><img src="https://img.shields.io/badge/MapLibre_GL-5.1-396ebd.svg?logo=maplibre&logoColor=white" alt="MapLibre GL 5.1" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/Pengujian-13%20Lulus-44bb44.svg?logo=vitest&logoColor=white" alt="13 Pengujian Lulus" /></a>
+</p>
 
-## Menjalankan Secara Lokal
+---
 
-### Prasyarat
+<p align="center">
+  <img src="docs/images/overview-light.png" alt="Tampilan Antarmuka KAIStream di Seluruh Pulau Jawa" width="100%" />
+</p>
 
-- Node.js `22+` dan `npm`
-- Python `3.11+` beserta paket `networkx`, `beautifulsoup4`, dan `poppler-utils` (`pdftotext`) apabila ingin membangun ulang dataset dari sumber hulu
+---
 
-### Instalasi dan Server Pengembangan
+## Keterangan Proyek
+
+KAIStream adalah aplikasi web berbasis peta vektor interaktif (MapLibre GL JS) yang menampilkan pergerakan kereta api di seluruh Pulau Jawa secara deterministik. Posisi setiap rangkaian dihitung secara matematis pada 60 frame per detik menggunakan model kinematika berbasis jadwal referensi Grafik Perjalanan Kereta Api (GAPEKA) dan geometri rel presisi dari OpenStreetMap.
+
+Sistem ini menggabungkan dua ekosistem perkeretaapian yang beroperasi di Pulau Jawa:
+1. **Jaringan Nasional PT KAI (Gauge 1067 mm):** Mencakup Kereta Api Antarkota (Eksekutif, Bisnis, Ekonomi), KRL Commuter Line (Jabodetabek, Yogyakarta-Solo, Bandung Raya), KA Bandara, dan KA Lokal di 6 provinsi.
+2. **Jaringan Kereta Cepat Whoosh PT KCIC (Gauge Standar 1435 mm):** Koridor kecepatan tinggi Halim s.d. Tegalluar Summarecon dengan batas kecepatan operasional hingga 350 km/jam, dipisahkan secara geometri pada jalur ganda terisolasi (lajur selatan ke arah timur dan lajur utara ke arah barat).
+
+> [!NOTE]
+> KAIStream mengandalkan perhitungan deterministik terhadap jadwal GAPEKA dan titik lintas langsung (Ls), bukan data telemetri GPS waktu nyata dari lokomotif. Proyek ini dikembangkan secara independen dan tidak memiliki afiliasi resmi dengan PT Kereta Api Indonesia (Persero), PT Kereta Commuter Indonesia, maupun PT Kereta Cepat Indonesia China (KCIC).
+
+### Cakupan Dataset Terverifikasi
+
+Snapshot data statis pada direktori [`public/data/`](public/data/) telah tervalidasi penuh tanpa galat:
+
+| Komponen Data | Jumlah Terverifikasi | Sumber dan Spesifikasi |
+| :--- | ---: | :--- |
+| Provinsi aktif | `6` | Banten, DKI Jakarta, Jawa Barat, Jawa Tengah, DI Yogyakarta, Jawa Timur |
+| Total jadwal perjalanan harian | `2.490` | GAPEKA Kemenhub DJKA (KP-DJKA 116/2026 dan KP-DJKA 224/2024) |
+| Perjalanan Kereta Cepat Whoosh | `62` | KP-DJKA 2/2025 (G1003 s.d. G1064 Halim-Tegalluar pp) |
+| Titik waktu lintas langsung (`Ls`) | `13.215` | Checkpoint stasiun non-berhenti untuk interpolasi kecepatan per petak |
+| Stasiun dan perhentian | `461` | 111 stasiun KAJJ utama, stasiun KRL commuter, dan 4 stasiun Whoosh |
+| Segmen rel aktif | `11.317` | Dari 12.244 segmen rel OSM Jawa (1.636 tunggal, 5.014 ganda, 4.667 multi-jalur/DDT) |
+| Segmen rel cepat `1435 mm` | `316` | Koridor ganda Halim-Tegalluar (130 jembatan layang, 26 terowongan) |
+| Koridor rute unik | `368` | Polilin terarah dengan koordinat dan jarak kumulatif per simpul |
+| Galat validasi jadwal & rel | `0` | Diverifikasi melalui skrip validasi build dan 13 uji otomatis Vitest |
+
+### Fitur Utama
+
+- **Interpolasi Kinematika 60 FPS:** Posisi, arah hadap (bearing), estimasi kecepatan seketika, dan persentase perjalanan dihitung mulus dengan kurva percepatan dan perlambatan di dekat stasiun.
+- **Pemisahan Fisik Jalur 1067 mm dan 1435 mm:** Jalur Kereta Cepat Whoosh digambar di atas koridor layang independen berwarna merah terang, terpisah dari jalur konvensional KAI. Di koridor Manggarai s.d. Bekasi, sistem menerapkan pemisahan 4 jalur (Double-Double Track) antara jalur KRL dan KAJJ.
+- **Visualisasi Artikulasi Rangkaian:** Setiap kereta ditampilkan sebagai rangkaian terartikulasi yang terdiri dari 1 unit lokomotif dan 3 kereta penumpang yang menekuk secara natural mengikuti kurva rel, tanpa artefak garis kaku. Rangkaian Whoosh menggunakan skema livery putih-merah khusus seri CR400AF.
+- **Kontrol Waktu (Time Machine):** Pengguna dapat mengubah kecepatan simulasi (1x, 5x, 10x, 20x, 60x, 120x), melompat ke jam tertentu, menggeser slider waktu 24 jam WIB, atau memfilter jadwal hari kerja versus akhir pekan.
+- **Pencarian Rute Antarmoda:** Mendukung pencarian perjalanan langsung dan transit 1 kali di seluruh stasiun Jawa, termasuk integrasi transfer Whoosh di Stasiun Padalarang menuju KA Feeder ke Stasiun Bandung.
+- **Peta Dasar dan Overlay Cuaca:** Menyediakan pilihan tampilan Standar (gaya kertas kartografi), Satelit (Esri World Imagery), dan Topografi (Esri World Topo), ditambah overlay citra radar hujan langsung dari RainViewer.
+- **Sinkronisasi State URL:** Koordinat zoom, posisi kamera, kereta yang dipilih, stasiun yang dibuka, pilihan peta dasar, dan radar hujan tersimpan pada URL permalink untuk memudahkan pembagian tautan.
+
+### Galeri Tangkapan Layar
+
+| Koridor Kereta Cepat Whoosh (1435 mm) | Mode Gelap & Hub Padalarang |
+| :---: | :---: |
+| ![Koridor Whoosh Jakarta-Bandung](docs/images/whoosh-corridor.png) | ![Mode Gelap Stasiun Padalarang](docs/images/dark-mode.png) |
+| Tampilan jalur ganda Whoosh 1435 mm warna merah, panel KA KCIC G1012 kecepatan 293 km/jam, dan titik Ls Karawang. | Visualisasi malam hari di sekitar Padalarang dan Bandung, memperlihatkan integrasi Whoosh, KA Feeder, dan KA Lokal. |
+
+<p align="center">
+  <img src="docs/images/mobile-detail.png" width="340" alt="Tampilan Responsif Mobile KAIStream pada Lebar Layar 360px" />
+  <br />
+  <em>Tata letak responsif pada perangkat seluler dengan lembar geser detail kereta dan kontrol ringkas.</em>
+</p>
+
+---
+
+## Panduan Instalasi dan Menjalankan
+
+### Prasyarat Sistem
+
+Sebelum memulai, pastikan perangkat Anda telah terpasang:
+- **Node.js** versi 22.0.0 atau lebih baru
+- **npm** versi 10.0.0 atau lebih baru
+- **Git** untuk kloning repositori
+
+*(Opsional: Python 3.11+ dan Poppler Utils hanya dibutuhkan apabila Anda hendak mengekstrak ulang jadwal dari PDF GAPEKA DJKA Kemenhub).*
+
+### 1. Kloning Repositori
+
+```bash
+git clone https://github.com/kaivyy/KAIStream.git
+cd KAIStream
+```
+
+### 2. Pemasangan Dependensi
+
+Pasang seluruh paket pustaka yang tercantum pada `package.json`:
 
 ```bash
 npm install
+```
+
+### 3. Menjalankan Server Pengembangan
+
+Jalankan server pengembangan lokal berbasis Vite:
+
+```bash
 npm run dev
 ```
 
-Buka alamat yang ditampilkan oleh Vite (umumnya `http://localhost:5173`) di peramban.
+Buka URL lokal yang muncul di terminal (biasanya `http://localhost:5173`) menggunakan peramban modern (Chrome, Firefox, Safari, Edge).
 
-### Pengujian dan Build Produksi
+### 4. Menjalankan Pengujian Otomatis
+
+Jalankan pengujian unit, interpolasi matematika, mesin jadwal, dan integritas dataset menggunakan Vitest:
 
 ```bash
-# Menjalankan 13 pengujian unit, geometri, mesin simulasi, dan integrasi dataset
 npm test
+```
 
-# Memeriksa tipe TypeScript dan membangun bundel produksi ke direktori dist/
+Perintah di atas akan mengeksekusi 13 modul uji tervalidasi mencakup:
+- Format waktu WIB dan penanganan pergantian tengah malam (overnight cross-midnight).
+- Interpolasi geometri kelengkungan rel tanpa jalan pintas lurus.
+- Kinematika percepatan, perlambatan, dan offset lateral sepur kanan.
+- Artikulasi 4 unit kereta pada lengkung busur lintasan.
+- Validasi 2.490 perjalanan dan 461 stasiun di dalam batas geografis Pulau Jawa.
+
+### 5. Membangun Bundel Produksi
+
+Untuk menghasilkan berkas statis siap rilis ke direktori `dist/`:
+
+```bash
 npm run build
+```
 
-# Menjalankan server pratinjau produksi
+Untuk menguji hasil build produksi secara lokal:
+
+```bash
 npm run preview
 ```
 
-### Membangun Ulang atau Menyinkronkan Dataset
+Server pratinjau akan menyajikan aplikasi produksi pada `http://localhost:4173` atau port yang dikonfigurasikan.
 
-Repositori ini sudah menyertakan snapshot dataset tervalidasi di [`public/data/`](public/data/) sehingga aplikasi langsung berjalan tanpa perlu menjalankan skrip Python terlebih dahulu. Untuk memperbarui data jadwal dan jaringan rel secara manual:
+### 6. Pembaruan Dataset (Opsional)
+
+Repositori ini sudah menyertakan snapshot dataset lengkap di direktori `public/data/` sehingga aplikasi dapat langsung dijalankan tanpa langkah build data tambahan.
+
+Jika ingin memperbarui atau membangun ulang berkas data JSON:
 
 ```bash
-# Membangun ulang dataset menggunakan cache lokal bila tersedia
+# Membangun ulang dataset dari cache dan mengekspor ke public/data
 npm run build:data
 
-# Memaksa pembaruan jadwal dari sumber hulu dan menyalin hasil ke dist/data
+# Mengunduh pembaruan jadwal terbaru dari sumber resmi dan menyalin ke dist/data
 npm run sync:refresh
 
-# Menjalankan skrip sinkronisasi harian berpenjaga flock (untuk cron lokal)
+# Menjalankan sinkronisasi dengan penguncian berkas flock (untuk tugas cron berkala)
 npm run sync:data
 ```
 
-## Struktur Repositori
+---
+
+## Struktur Direktori
 
 ```text
-kaistream/
+KAIStream/
 ├── .github/workflows/
-│   ├── ci.yml                # Pipeline verifikasi tes & build pada push/PR
-│   └── sync-data.yml         # Jadwal GitHub Actions harian (00:05 WIB) pembaruan data
+│   ├── ci.yml                # Pipeline otomatis verifikasi pengujian dan build
+│   └── sync-data.yml         # Workflow terjadwal harian pembaruan data GAPEKA
 ├── docs/
-│   ├── ARCHITECTURE.md       # Arsitektur front-end, state, dan layer MapLibre WebGL
-│   ├── DATA_PIPELINE.md      # Pipeline ekstraksi data Python, graf 1067mm/1435mm, dan failover
-│   ├── SIMULATION.md         # Matematika interpolasi, titik Ls, dan artikulasi 4 kereta
-│   └── images/               # Tangkapan layar aplikasi untuk dokumentasi
+│   ├── ARCHITECTURE.md       # Dokumentasi arsitektur modul dan layer MapLibre GL
+│   ├── DATA_PIPELINE.md      # Alur pemrosesan data, graf rel, dan sistem failover
+│   ├── SIMULATION.md         # Matematika interpolasi polilin, kurva, dan titik Ls
+│   └── images/               # Tangkapan layar antarmuka untuk dokumentasi
 ├── public/
-│   ├── data/                 # Dataset JSON statis (stations, routes, timetable, rail-network)
-│   ├── favicon.svg           # Ikon vektor utama KAIStream
-│   ├── favicon.ico           # Favicon multi-resolusi (16x16, 32x32, 48x48)
-│   └── site.webmanifest      # Manifes aplikasi web
+│   ├── data/                 # Dataset statis JSON (stations, routes, timetable, rail-network)
+│   ├── favicon.svg           # Ikon SVG utama
+│   ├── favicon.ico           # Ikon multi-ukuran
+│   ├── og-preview.png        # Gambar pratinjau Open Graph 1200x630
+│   └── site.webmanifest      # Manifes Web App
 ├── scripts/
-│   ├── build_java_data.py    # Pembangun graf rel OSM, rute terarah, dan jadwal Jawa
-│   ├── djka_source.py        # Ekstraktor resmi GAPEKA Kemenhub DJKA (KAJJ & Whoosh PDF)
-│   └── auto_sync.sh          # Pembungkus sinkronisasi otomatis dengan penguncian flock
+│   ├── build_java_data.py    # Pembuat graf rel OSM dan penggabung jadwal GAPEKA
+│   ├── djka_source.py        # Pengunduh dan parser PDF resmi GAPEKA DJKA
+│   └── auto_sync.sh          # Skrip pembungkus sinkronisasi harian dengan flock
 ├── src/
-│   ├── components/           # Komponen UI React dan kanvas peta MapLibre GL
-│   ├── engine/               # Mesin simulasi murni, geometri, validator, dan pencari rute
-│   ├── styles/               # Token warna kartografi, reset dasar, dan tata letak responsif
-│   ├── utils/                # Warna livery, label, penyimpanan favorit, dan state URL
-│   ├── App.tsx               # Orkestrasi state aplikasi dan sinkronisasi waktu WIB
-│   └── main.tsx              # Titik masuk React
-├── DESIGN.md                 # Spesifikasi palet kartografi, tipografi, dan kontras WCAG AA
-├── CONTRIBUTING.md           # Panduan kontribusi dan standar verifikasi
-└── LICENSE                   # Lisensi MIT
+│   ├── components/           # Komponen antarmuka React dan kanvas peta MapLibre
+│   ├── engine/               # Mesin kalkulasi deterministik, pencari rute, dan validator
+│   ├── styles/               # Desain token warna kartografi dan tata letak responsif
+│   ├── utils/                # Utilitas livery kereta, label stasiun, dan parser URL
+│   ├── App.tsx               # Komponen utama dan siklus hidup waktu simulasi
+│   └── main.tsx              # Titik masuk eksekusi React DOM
+├── CONTRIBUTING.md           # Standar pengujian dan pedoman pengiriman kontribusi
+├── DESIGN.md                 # Spesifikasi palet warna, tipografi, dan kontras WCAG
+├── LICENSE                   # Lisensi sumber terbuka MIT
+├── package.json              # Konfigurasi dependensi dan skrip proyek
+├── tsconfig.json             # Konfigurasi kompilator TypeScript
+├── vite.config.ts            # Konfigurasi bundler Vite
+└── vitest.config.ts          # Konfigurasi lingkungan uji Vitest
 ```
 
-## Dokumentasi Teknis Lebih Lanjut
+---
 
-- [Arsitektur Aplikasi dan Layer Peta (`docs/ARCHITECTURE.md`)](docs/ARCHITECTURE.md)
-- [Pipeline Data, Isolasi Graf 1067 mm vs 1435 mm, dan Failover (`docs/DATA_PIPELINE.md`)](docs/DATA_PIPELINE.md)
-- [Mesin Simulasi, Interpolasi Titik `Ls`, dan Artikulasi Kereta (`docs/SIMULATION.md`)](docs/SIMULATION.md)
-- [Sistem Desain dan Palet Kartografi (`DESIGN.md`)](DESIGN.md)
-- [Panduan Kontribusi (`CONTRIBUTING.md`)](CONTRIBUTING.md)
+## Dokumentasi Teknis
+
+Rincian implementasi teknis lebih dalam dapat dipelajari pada dokumen berikut:
+- [Arsitektur Aplikasi dan Render Peta](docs/ARCHITECTURE.md)
+- [Pipeline Ekstraksi Data dan Integrasi Jalur](docs/DATA_PIPELINE.md)
+- [Mesin Simulasi, Kinematika, dan Titik Lintas Langsung](docs/SIMULATION.md)
+- [Standar Desain Kartografi dan Tata Warna](DESIGN.md)
+- [Panduan Berkontribusi](CONTRIBUTING.md)
+
+---
 
 ## Sumber Data dan Atribusi
 
-1. Geometri jaringan rel dan stasiun Pulau Jawa berasal dari kontributor [OpenStreetMap](https://www.openstreetmap.org/copyright) melalui ekstrak Geofabrik Pulau Jawa di bawah lisensi ODbL 1.0.
-2. Regulasi dan jadwal referensi resmi GAPEKA bersumber dari Direktorat Jenderal Perkeretaapian, Kementerian Perhubungan RI ([djka.kemenhub.go.id/regulasi](https://djka.kemenhub.go.id/regulasi)): `KP-DJKA 116 Tahun 2026` (GAPEKA Jawa 2026), `KP-DJKA 224 Tahun 2024` (GAPEKA Jawa 2025), serta `KP-DJKA 2 Tahun 2025` (GAPEKA Kereta Api Kecepatan Tinggi Jakarta-Bandung Whoosh).
-3. Data jadwal operasional harian dan titik lintas stasiun diperkaya melalui AluRail Public Data, Comuline API, [Sobat KRL Master Data](https://github.com/kangfarih/sobat-krl-master-data) (ODbL 1.0), dan referensi koordinat stasiun dari [TrackingKRL](https://github.com/oktavianrizalm/TrackingKRL).
-4. Poligon batas provinsi dan garis pantai bersumber dari BAKOSURTANAL (`superpikar/indonesia-geojson`) serta Natural Earth 10m Land Coastlines (Domain Publik).
-5. Peta dasar disediakan oleh CARTO Basemaps, Esri World Imagery, dan Esri World Topo Map. Citra radar cuaca opsional disediakan oleh RainViewer Public Weather Radar API.
+1. **OpenStreetMap:** Geometri lintasan rel kereta dan posisi stasiun di Pulau Jawa bersumber dari kontributor [OpenStreetMap](https://www.openstreetmap.org/copyright) melalui Geofabrik di bawah lisensi ODbL 1.0.
+2. **Kementerian Perhubungan RI (DJKA):** Jadwal perjalanan dan aturan operasional merujuk pada regulasi resmi Direktorat Jenderal Perkeretaapian ([djka.kemenhub.go.id/regulasi](https://djka.kemenhub.go.id/regulasi)): Keputusan Menhub Nomor `KP-DJKA 116 Tahun 2026`, `KP-DJKA 224 Tahun 2024`, dan `KP-DJKA 2 Tahun 2025`.
+3. **Data Jadwal Pelengkap:** Jadwal KRL Commuter Line dan kereta lokal diperkaya melalui sumber terbuka [Sobat KRL Master Data](https://github.com/kangfarih/sobat-krl-master-data) (ODbL 1.0), AluRail Public Data, Comuline API, serta referensi titik henti stasiun dari [TrackingKRL](https://github.com/oktavianrizalm/TrackingKRL).
+4. **Batas Geografis:** Data poligon garis pantai dan wilayah provinsi Jawa mengacu pada data BAKOSURTANAL (`superpikar/indonesia-geojson`) serta Natural Earth 10m Land Coastlines.
+5. **Peta Dasar & Cuaca:** Ubin peta disediakan oleh CARTO Basemaps, Esri World Imagery, dan Esri World Topo. Citra radar cuaca disediakan oleh RainViewer Public Weather Radar API.
+
+---
 
 ## Lisensi
 
-Kode sumber perangkat lunak KAIStream dilisensikan di bawah [Lisensi MIT](LICENSE). Data geospasial dan jadwal perjalanan tetap berada di bawah ketentuan lisensi masing-masing penyedia data asal (termasuk ODbL 1.0 untuk data turunan OpenStreetMap dan Sobat KRL).
+Seluruh kode sumber perangkat lunak KAIStream didistribusikan di bawah ketentuan [Lisensi MIT](LICENSE).
+
+Data geospasial jaringan rel dan jadwal operasional tunduk pada ketentuan lisensi penyedia masing-masing, termasuk Open Database License (ODbL 1.0) untuk data turunan OpenStreetMap dan Sobat KRL.
