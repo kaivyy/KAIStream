@@ -24,6 +24,7 @@ export type RailLayerKey =
   | "branch"
   | "non_operational"
   | "stations"
+  | "depots"
   | "provinces";
 
 export interface Station {
@@ -35,6 +36,51 @@ export interface Station {
   lat: number;
   category: string;
   major: boolean;
+}
+
+export interface Depot {
+  code: string;
+  name: string;
+  fullName: string;
+  city: string;
+  province: string;
+  lat: number;
+  lon: number;
+  category: "locomotive" | "commuter" | "highspeed" | "lrt_mrt" | "maintenance";
+  locomotives: number;
+  activeLocomotives: number;
+  cars: number;
+}
+
+export interface CarConsistItem {
+  kind: string;
+  label: string;
+  carNumber?: string;
+  variant?: string;
+}
+
+export interface TrainConsist {
+  trainNumber: string;
+  locomotiveModel?: string;
+  locomotivePlate?: string;
+  locomotiveDepot?: string;
+  formation: CarConsistItem[];
+  totalCars: number;
+  source: "reported" | "official_gapeka" | "standard_formation";
+}
+
+export type AlertSeverity = "info" | "warning" | "emergency";
+
+export interface OperationalAlert {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  category: "gangguan" | "keterlambatan" | "rekayasa" | "perawatan";
+  severity: AlertSeverity;
+  timestampWib: string;
+  active: boolean;
+  source: string;
 }
 
 export interface RouteShape {

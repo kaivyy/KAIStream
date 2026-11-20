@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { formatSimTime } from "../engine/time.ts";
-import type { Station, ThemeMode, TrainTrip } from "../engine/types.ts";
+import type { Depot, OperationalAlert, Station, ThemeMode, TrainTrip } from "../engine/types.ts";
 import { CATEGORY_LABELS, formatTrainCode } from "../utils/labels.ts";
 import { getTrainColor } from "../utils/trainColors.ts";
 
@@ -15,19 +15,24 @@ interface HeaderBarProps {
   theme: ThemeMode;
   onToggleTheme: () => void;
   onOpenInfo: () => void;
+  alerts?: readonly OperationalAlert[];
+  onOpenAlerts?: () => void;
   searchOpen: boolean;
   onCloseSearch: () => void;
   timeMachineOpen: boolean;
   onToggleTimeMachine: () => void;
   stations: readonly Station[];
+  depots?: readonly Depot[];
   trips: readonly TrainTrip[];
   onSelectTrain: (tripId: string) => void;
   onSelectStation: (stationCode: string) => void;
+  onSelectDepot?: (depotCode: string) => void;
 }
 
 type SearchHit =
   | { kind: "train"; id: string; title: string; sub: string; plate: string; color: string }
-  | { kind: "station"; code: string; title: string; sub: string; plate: string };
+  | { kind: "station"; code: string; title: string; sub: string; plate: string }
+  | { kind: "depot"; code: string; title: string; sub: string; plate: string };
 
 export function HeaderBar({
   simSeconds,
@@ -40,14 +45,18 @@ export function HeaderBar({
   theme,
   onToggleTheme,
   onOpenInfo,
+  alerts,
+  onOpenAlerts,
   searchOpen,
   onCloseSearch,
   timeMachineOpen,
   onToggleTimeMachine,
   stations,
+  depots = [],
   trips,
   onSelectTrain,
   onSelectStation,
+  onSelectDepot,
 }: HeaderBarProps) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -84,6 +93,23 @@ export function HeaderBar({
         plate: st.code,
       }));
 
+    const depotMatches = depots
+      .filter(
+        (dp) =>
+          dp.name.toLowerCase().includes(q) ||
+          dp.code.toLowerCase().includes(q) ||
+          dp.city.toLowerCase().includes(q) ||
+          dp.category.toLowerCase().includes(q),
+      )
+      .slice(0, 4)
+      .map<SearchHit>((dp) => ({
+        kind: "depot",
+        code: dp.code,
+        title: dp.name,
+        sub: `${dp.category} (${dp.city})`,
+        plate: dp.code,
+      }));
+
     const trainMatches: SearchHit[] = [];
     for (const trip of trips) {
       const plate = formatTrainCode(trip.number, trip.category);
@@ -104,12 +130,16 @@ export function HeaderBar({
       if (trainMatches.length >= 10) break;
     }
 
-    // Put exact station matches before trains when user types a city or station name
-    const exactStationFirst = stationMatches.some(
-      (s) => s.title.toLowerCase() === `stasiun ${q}` || s.plate.toLowerCase() === q,
-    );
-    return exactStationFirst ? [...stationMatches, ...trainMatches] : [...trainMatches, ...stationMatches];
-  }, [query, stations, trips, theme]);
+    // Put exact station or depot matches before trains when user types a city or station/depot name
+    const exactPlaceFirst =
+      stationMatches.some(
+        (s) => s.title.toLowerCase() === `stasiun ${q}` || s.plate.toLowerCase() === q,
+      ) ||
+      depotMatches.some((d) => d.plate.toLowerCase() === q || d.title.toLowerCase().includes(q));
+    return exactPlaceFirst
+      ? [...stationMatches, ...depotMatches, ...trainMatches]
+      : [...trainMatches, ...stationMatches, ...depotMatches];
+  }, [query, stations, depots, trips, theme]);
 
   useEffect(() => {
     setActiveIdx(0);
@@ -144,8 +174,10 @@ export function HeaderBar({
   const chooseHit = (hit: SearchHit) => {
     if (hit.kind === "train") {
       onSelectTrain(hit.id);
-    } else {
+    } else if (hit.kind === "station") {
       onSelectStation(hit.code);
+    } else if (hit.kind === "depot" && onSelectDepot) {
+      onSelectDepot(hit.code);
     }
     setOpen(false);
     onCloseSearch();
@@ -205,6 +237,41 @@ export function HeaderBar({
                 <circle cx="8" cy="4.8" r="0.9" fill="currentColor" />
               </svg>
             </button>
+
+            {alerts && alerts.length > 0 && onOpenAlerts && (
+              <button
+                type="button"
+                className="hud-icon-btn"
+                onClick={onOpenAlerts}
+                aria-label={`Warta lintas operasional (${alerts.length} laporan aktif)`}
+                title="Warta Lintas Operasional"
+                style={{ position: "relative" }}
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
+                  <path
+                    d="M8 2.2 1.8 13.2h12.4L8 2.2Z"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path d="M8 6.5v3.2M8 11.2h.01" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "3px",
+                    right: "3px",
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "50%",
+                    backgroundColor: "#f59e0b",
+                  }}
+                  aria-hidden="true"
+                />
+              </button>
+            )}
           </div>
         </div>
 
@@ -417,7 +484,7 @@ export function HeaderBar({
             <div id="kaistream-search-listbox" role="listbox" className="search-dropdown">
               {hits.length === 0 ? (
                 <div className="search-empty">
-                  Tidak ada kereta atau stasiun yang cocok untuk "{query.trim()}".
+                  Tidak ada kereta, stasiun, atau depo yang cocok untuk "{query.trim()}".
                 </div>
               ) : (
                 hits.map((hit, idx) => (

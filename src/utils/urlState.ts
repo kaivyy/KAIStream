@@ -11,6 +11,7 @@ export interface InitialUrlState {
   mapView: MapViewCoords | null;
   trainId: string | null;
   stationCode: string | null;
+  depotCode: string | null;
   basemap: BasemapMode | null;
   rainRadarEnabled: boolean | null;
 }
@@ -20,6 +21,7 @@ export function parseUrlState(href: string): InitialUrlState {
     mapView: null,
     trainId: null,
     stationCode: null,
+    depotCode: null,
     basemap: null,
     rainRadarEnabled: null,
   };
@@ -29,11 +31,13 @@ export function parseUrlState(href: string): InitialUrlState {
     const params = u.searchParams;
     const trainParam = params.get("train")?.trim();
     const stationParam = params.get("station")?.trim();
+    const depotParam = params.get("depot")?.trim();
     const bmParam = params.get("bm")?.trim();
     const rainParam = params.get("rain")?.trim();
 
     if (trainParam) result.trainId = trainParam;
     if (stationParam) result.stationCode = stationParam.toUpperCase();
+    if (depotParam) result.depotCode = depotParam.toUpperCase();
     if (bmParam === "standard" || bmParam === "satellite" || bmParam === "topo") {
       result.basemap = bmParam;
     }
@@ -64,17 +68,20 @@ export function buildShareUrl(opts: {
   mapView: MapViewCoords | null;
   trainId: string | null;
   stationCode: string | null;
+  depotCode?: string | null;
   basemap: BasemapMode;
   rainRadarEnabled: boolean;
 }): string {
   const u = new URL(opts.baseHref);
   u.searchParams.delete("train");
   u.searchParams.delete("station");
+  u.searchParams.delete("depot");
   u.searchParams.delete("bm");
   u.searchParams.delete("rain");
 
   if (opts.trainId) u.searchParams.set("train", opts.trainId);
   else if (opts.stationCode) u.searchParams.set("station", opts.stationCode);
+  else if (opts.depotCode) u.searchParams.set("depot", opts.depotCode);
 
   if (opts.basemap !== "standard") u.searchParams.set("bm", opts.basemap);
   if (opts.rainRadarEnabled) u.searchParams.set("rain", "1");
@@ -95,6 +102,7 @@ export function syncBrowserUrl(opts: {
   mapView: MapViewCoords | null;
   trainId: string | null;
   stationCode: string | null;
+  depotCode?: string | null;
   basemap: BasemapMode;
   rainRadarEnabled: boolean;
 }): void {

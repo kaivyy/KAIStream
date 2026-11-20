@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react";
 import { computeStopStates } from "../engine/simulation.ts";
 import { formatScheduleTime, formatSimTime } from "../engine/time.ts";
-import type { SimulatedTrain, Station, ThemeMode } from "../engine/types.ts";
+import type { SimulatedTrain, Station, ThemeMode, TrainConsist } from "../engine/types.ts";
 import {
   CATEGORY_LABELS,
   formatTrainCode,
@@ -13,6 +13,7 @@ import { StatusIcon } from "./StatusIcon.tsx";
 
 interface TrainDetailPanelProps {
   train: SimulatedTrain;
+  consist?: TrainConsist | null;
   theme: ThemeMode;
   simSeconds: number;
   stationMap: ReadonlyMap<string, Station>;
@@ -30,6 +31,7 @@ interface TrainDetailPanelProps {
 
 export function TrainDetailPanel({
   train,
+  consist,
   theme,
   simSeconds,
   stationMap,
@@ -284,6 +286,112 @@ export function TrainDetailPanel({
             </div>
           </div>
         </div>
+
+        {consist && consist.formation.length > 0 && (
+          <div className="detail-section">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+              <h3 className="detail-section-title" style={{ margin: 0 }}>
+                Formasi Rangkaian ({consist.totalCars} Kereta)
+              </h3>
+              <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>
+                {consist.source === "reported"
+                  ? "Laporan Sarana Harian"
+                  : consist.source === "official_gapeka"
+                    ? "Alokasi Resmi Whoosh"
+                    : "Stamformasi Standar GAPEKA"}
+              </span>
+            </div>
+
+            {consist.locomotiveModel && (
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "8px", fontSize: "12px" }}>
+                <span className="badge-chip" style={{ backgroundColor: "var(--surface-sunken)", padding: "2px 6px", borderRadius: "4px" }}>
+                  Lokomotif
+                </span>
+                <strong>{consist.locomotiveModel}</strong>
+                {consist.locomotivePlate && (
+                  <span className="mono-tabular" style={{ color: "var(--text-secondary)" }}>
+                    ({consist.locomotivePlate})
+                  </span>
+                )}
+                {consist.locomotiveDepot && (
+                  <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
+                    Depo {consist.locomotiveDepot}
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div
+              className="consist-strip"
+              style={{
+                display: "flex",
+                gap: "6px",
+                overflowX: "auto",
+                padding: "4px 0 8px",
+              }}
+            >
+              {consist.formation.map((car, cIdx) => (
+                <div
+                  key={cIdx}
+                  title={`${car.label}${car.carNumber ? ` (${car.carNumber})` : ""}`}
+                  style={{
+                    flexShrink: 0,
+                    width: "48px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "2px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "26px",
+                      borderRadius: "4px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "11px",
+                      fontWeight: 700,
+                      backgroundColor:
+                        car.kind === "VIP"
+                          ? "#7c3aed"
+                          : car.kind === "K1"
+                            ? "#1e40af"
+                            : car.kind === "K2"
+                              ? "#0d9488"
+                              : car.kind === "K3"
+                                ? "#d97706"
+                                : car.kind === "M1" || car.kind === "MP3"
+                                  ? "#15803d"
+                                  : car.kind === "P"
+                                    ? "#475569"
+                                    : car.kind === "CR400AF"
+                                      ? "#dc2626"
+                                      : "#3b82f6",
+                      color: "#ffffff",
+                    }}
+                  >
+                    {car.kind}
+                  </div>
+                  <span
+                    className="mono-tabular"
+                    style={{
+                      fontSize: "10px",
+                      color: "var(--text-secondary)",
+                      maxWidth: "48px",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {car.carNumber ? car.carNumber.slice(-5) : car.label.slice(0, 5)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="detail-section" style={{ borderBottom: 0 }}>
           <h3 className="detail-section-title">Urutan Pemberhentian</h3>

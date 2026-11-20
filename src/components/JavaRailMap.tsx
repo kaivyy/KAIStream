@@ -15,6 +15,7 @@ import { evaluateAllTrains } from "../engine/simulation.ts";
 import type {
   BasemapMode,
   DayMode,
+  Depot,
   RailLayerKey,
   RouteShape,
   SimulatedTrain,
@@ -433,8 +434,11 @@ interface JavaRailMapProps {
   focusRouteOnly: boolean;
   followTrain: boolean;
   cameraTarget: { lon: number; lat: number; zoom: number; nonce: number } | null;
+  depots: readonly Depot[];
+  selectedDepot: Depot | null;
   onSelectTrain: (tripId: string) => void;
   onSelectStation: (stationCode: string) => void;
+  onSelectDepot: (depotCode: string) => void;
 }
 
 export function JavaRailMap({
@@ -455,6 +459,8 @@ export function JavaRailMap({
   maskGeoJson,
   railGeoJson,
   stations,
+  depots,
+  selectedDepot,
   trips,
   routeMap,
   stationMap,
@@ -473,6 +479,7 @@ export function JavaRailMap({
   cameraTarget,
   onSelectTrain,
   onSelectStation,
+  onSelectDepot,
 }: JavaRailMapProps) {
   const hostRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -526,12 +533,14 @@ export function JavaRailMap({
   const callbacksRef = useRef({
     onSelectTrain,
     onSelectStation,
+    onSelectDepot,
     onMapViewChange,
     onRainStatusChange,
   });
   callbacksRef.current = {
     onSelectTrain,
     onSelectStation,
+    onSelectDepot,
     onMapViewChange,
     onRainStatusChange,
   };
@@ -556,6 +565,31 @@ export function JavaRailMap({
       geometry: {
         type: "Point",
         coordinates: [s.lon, s.lat],
+      },
+    })),
+  };
+
+  const depotsGeoJson = useRef<GeoJSON.FeatureCollection>({
+    type: "FeatureCollection",
+    features: [],
+  });
+
+  depotsGeoJson.current = {
+    type: "FeatureCollection",
+    features: depots.map((d) => ({
+      type: "Feature",
+      properties: {
+        code: d.code,
+        name: d.name,
+        fullName: d.fullName,
+        category: d.category,
+        locomotives: d.locomotives,
+        activeLocomotives: d.activeLocomotives,
+        selected: selectedDepot?.code === d.code,
+      },
+      geometry: {
+        type: "Point",
+        coordinates: [d.lon, d.lat],
       },
     })),
   };
@@ -650,6 +684,9 @@ export function JavaRailMap({
       }
       if (!map.getSource("stations-source")) {
         map.addSource("stations-source", { type: "geojson", data: emptyFC });
+      }
+      if (!map.getSource("depots-source")) {
+        map.addSource("depots-source", { type: "geojson", data: emptyFC });
       }
       if (!map.getSource("trains-halo-source")) {
         map.addSource("trains-halo-source", { type: "geojson", data: emptyFC });
@@ -1009,6 +1046,54 @@ export function JavaRailMap({
       }
 
       map.addLayer({
+        id: "depots-circle",
+        type: "circle",
+        source: "depots-source",
+        minzoom: 6.8,
+        paint: {
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["zoom"],
+            7,
+            ["case", ["==", ["get", "selected"], true], 7, 3.2],
+            12,
+            ["case", ["==", ["get", "selected"], true], 9, 5.5],
+          ],
+          "circle-color": [
+            "case",
+            ["==", ["get", "selected"], true],
+            "#f59e0b",
+            "#d97706",
+          ],
+          "circle-stroke-width": 1.6,
+          "circle-stroke-color": t === "light" ? "#ffffff" : "#17202a",
+        },
+      });
+
+      if (!fellBack) {
+        map.addLayer({
+          id: "depots-labels",
+          type: "symbol",
+          source: "depots-source",
+          minzoom: 9.2,
+          layout: {
+            "text-field": ["get", "name"],
+            "text-font": ["Open Sans Regular", "Noto Sans Regular"],
+            "text-size": ["interpolate", ["linear"], ["zoom"], 9.2, 9.5, 12, 11],
+            "text-offset": [0, 1.2],
+            "text-anchor": "top",
+            "text-optional": true,
+          },
+          paint: {
+            "text-color": t === "light" ? "#92400e" : "#fbbf24",
+            "text-halo-color": t === "light" ? "#f7f5f0" : "#10161d",
+            "text-halo-width": 1.5,
+          },
+        });
+      }
+
+      map.addLayer({
         id: "trains-halo",
         type: "line",
         source: "trains-halo-source",
@@ -1089,7 +1174,15 @@ export function JavaRailMap({
       });
     }
 
-    for (const layerId of ["trains-layer", "stations-major-circle", "stations-minor-circle"]) {
+    map.on("click", "depots-circle", (e: any) => {
+      const feat = e.features?.[0];
+      const code = feat?.properties?.code;
+      if (typeof code === "string") {
+        callbacksRef.current.onSelectDepot(code);
+      }
+    });
+
+    for (const layerId of ["trains-layer", "stations-major-circle", "stations-minor-circle", "depots-circle"]) {
       map.on("mouseenter", layerId, () => {
         map.getCanvas().style.cursor = "pointer";
       });
@@ -1276,7 +1369,10 @@ export function JavaRailMap({
 
     const stSrc = map.getSource("stations-source") as maplibregl.GeoJSONSource | undefined;
     if (stSrc) stSrc.setData(stationsGeoJson.current);
-  }, [styleReady, provincesGeoJson, maskGeoJson, railGeoJson, stations, selectedStation]);
+
+    const dpSrc = map.getSource("depots-source") as maplibregl.GeoJSONSource | undefined;
+    if (dpSrc) dpSrc.setData(depotsGeoJson.current);
+  }, [styleReady, provincesGeoJson, maskGeoJson, railGeoJson, stations, selectedStation, depots, selectedDepot]);
 
   // Sync layer visibility toggles
   useEffect(() => {
@@ -1302,6 +1398,8 @@ export function JavaRailMap({
       ["stations-major-circle", visibleLayers.stations],
       ["stations-minor-circle", visibleLayers.stations],
       ["stations-labels", visibleLayers.stations],
+      ["depots-circle", visibleLayers.depots],
+      ["depots-labels", visibleLayers.depots],
       ["java-provinces-outline", visibleLayers.provinces],
     ];
     for (const [id, show] of pairs) {

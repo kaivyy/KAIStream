@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AlertsModal } from "./components/AlertsModal.tsx";
 import { DataInfoModal } from "./components/DataInfoModal.tsx";
+import { DepotDetailPanel } from "./components/DepotDetailPanel.tsx";
 import { ExplorerPanel, type ExplorerTab, type TrainListMode } from "./components/ExplorerPanel.tsx";
 import { HeaderBar } from "./components/HeaderBar.tsx";
 import { JavaRailMap } from "./components/JavaRailMap.tsx";
@@ -12,11 +14,14 @@ import type {
   BasemapMode,
   DatasetMetadata,
   DayMode,
+  Depot,
+  OperationalAlert,
   RailLayerKey,
   RouteShape,
   Station,
   ThemeMode,
   TrainCategory,
+  TrainConsist,
   TrainStatus,
   TrainTrip,
 } from "./engine/types.ts";
@@ -105,6 +110,9 @@ export function App() {
   const [maskGeoJson, setMaskGeoJson] = useState<GeoJSON.FeatureCollection | null>(null);
   const [railGeoJson, setRailGeoJson] = useState<GeoJSON.FeatureCollection | null>(null);
   const [stations, setStations] = useState<Station[]>([]);
+  const [depots, setDepots] = useState<Depot[]>([]);
+  const [consists, setConsists] = useState<Record<string, TrainConsist>>({});
+  const [alerts, setAlerts] = useState<OperationalAlert[]>([]);
   const [routes, setRoutes] = useState<RouteShape[]>([]);
   const [trips, setTrips] = useState<TrainTrip[]>([]);
   const [metadata, setMetadata] = useState<DatasetMetadata | null>(null);
@@ -117,19 +125,25 @@ export function App() {
     fetchJson<DatasetMetadata>("/data/metadata.json", true)
       .then(async (meta) => {
         const ver = encodeURIComponent(meta.generatedAt || String(Date.now()));
-        const [prov, mask, rail, st, rt, tt] = await Promise.all([
+        const [prov, mask, rail, st, rt, tt, dp, cs, al] = await Promise.all([
           fetchJson<GeoJSON.FeatureCollection>(`/data/java-provinces.json?v=${ver}`),
           fetchJson<GeoJSON.FeatureCollection>(`/data/java-mask.json?v=${ver}`),
           fetchJson<GeoJSON.FeatureCollection>(`/data/rail-network.json?v=${ver}`),
           fetchJson<Station[]>(`/data/stations.json?v=${ver}`),
           fetchJson<RouteShape[]>(`/data/routes.json?v=${ver}`),
           fetchJson<TrainTrip[]>(`/data/timetable.json?v=${ver}`),
+          fetchJson<Depot[]>(`/data/depots.json?v=${ver}`).catch(() => []),
+          fetchJson<Record<string, TrainConsist>>(`/data/consists.json?v=${ver}`).catch(() => ({})),
+          fetchJson<OperationalAlert[]>(`/data/alerts.json?v=${ver}`).catch(() => []),
         ]);
         if (!active) return;
         setProvincesGeoJson(prov);
         setMaskGeoJson(mask);
         setRailGeoJson(rail);
         setStations(st);
+        setDepots(dp);
+        setConsists(cs);
+        setAlerts(al);
         setRoutes(rt);
         setTrips(tt);
         setMetadata(meta);
@@ -147,6 +161,7 @@ export function App() {
   }, [loadNonce]);
 
   const stationMap = useMemo(() => new Map(stations.map((s) => [s.code, s])), [stations]);
+  const depotMap = useMemo(() => new Map(depots.map((d) => [d.code, d])), [depots]);
   const routeMap = useMemo(() => new Map(routes.map((r) => [r.id, r])), [routes]);
   const invalidMap = useMemo(
     () => validateDataset(stationMap, routeMap, trips),
@@ -326,11 +341,14 @@ export function App() {
     branch: true,
     non_operational: false,
     stations: true,
+    depots: true,
     provinces: true,
   });
 
   const [selectedTrainId, setSelectedTrainId] = useState<string | null>(null);
   const [selectedStationCode, setSelectedStationCode] = useState<string | null>(null);
+  const [selectedDepotCode, setSelectedDepotCode] = useState<string | null>(null);
+  const [alertsModalOpen, setAlertsModalOpen] = useState(false);
   const [focusRouteOnly, setFocusRouteOnly] = useState(false);
   const [followTrain, setFollowTrain] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -341,7 +359,7 @@ export function App() {
     nonce: number;
   } | null>(null);
 
-  // Restore train/station selection from permalink URL once dataset loads
+  // Restore train/station/depot selection from permalink URL once dataset loads
   const restoredUrlRef = useRef(false);
   useEffect(() => {
     if (loading || restoredUrlRef.current || trips.length === 0) return;
@@ -358,8 +376,15 @@ export function App() {
       if (window.matchMedia("(max-width: 699px)").matches) {
         setMobileSheet("detail");
       }
+      return;
     }
-  }, [loading, trips, stationMap, initialUrlState]);
+    if (initialUrlState.depotCode && depotMap.has(initialUrlState.depotCode)) {
+      setSelectedDepotCode(initialUrlState.depotCode);
+      if (window.matchMedia("(max-width: 699px)").matches) {
+        setMobileSheet("detail");
+      }
+    }
+  }, [loading, trips, stationMap, depotMap, initialUrlState]);
 
   // Debounced URL state synchronization (preserving clean shareable permalink)
   useEffect(() => {
@@ -369,12 +394,21 @@ export function App() {
         mapView,
         trainId: selectedTrainId,
         stationCode: selectedStationCode,
+        depotCode: selectedDepotCode,
         basemap,
         rainRadarEnabled,
       });
     }, 350);
     return () => window.clearTimeout(tId);
-  }, [loading, mapView, selectedTrainId, selectedStationCode, basemap, rainRadarEnabled]);
+  }, [
+    loading,
+    mapView,
+    selectedTrainId,
+    selectedStationCode,
+    selectedDepotCode,
+    basemap,
+    rainRadarEnabled,
+  ]);
 
   const toggleFavoriteTrain = useCallback(
     (tripId: string) => {
@@ -411,16 +445,22 @@ export function App() {
   }, []);
 
   const handleShareSelection = useCallback(
-    async (label: string, trainId: string | null, stationCode: string | null) => {
+    async (
+      label: string,
+      trainId: string | null,
+      stationCode: string | null,
+      depotCode: string | null = null,
+    ) => {
       const shareUrl = buildShareUrl({
         baseHref: window.location.href,
         mapView,
         trainId,
         stationCode,
+        depotCode,
         basemap,
         rainRadarEnabled,
       });
-      syncBrowserUrl({ mapView, trainId, stationCode, basemap, rainRadarEnabled });
+      syncBrowserUrl({ mapView, trainId, stationCode, depotCode, basemap, rainRadarEnabled });
 
       let copied = false;
       if (navigator.clipboard && window.isSecureContext) {
@@ -488,14 +528,25 @@ export function App() {
     [simulatedTrains, selectedTrainId],
   );
 
+  const selectedConsist = useMemo(() => {
+    if (!selectedTrain) return null;
+    return consists[selectedTrain.trip.number] ?? null;
+  }, [consists, selectedTrain]);
+
   const selectedStation = useMemo(
     () => (selectedStationCode ? stationMap.get(selectedStationCode) ?? null : null),
     [stationMap, selectedStationCode],
   );
 
+  const selectedDepot = useMemo(
+    () => (selectedDepotCode ? depotMap.get(selectedDepotCode) ?? null : null),
+    [depotMap, selectedDepotCode],
+  );
+
   const handleSelectTrain = useCallback(
     (tripId: string) => {
       setSelectedStationCode(null);
+      setSelectedDepotCode(null);
       setSelectedTrainId(tripId);
       setFollowTrain(false);
       if (isMobile) setMobileSheet("detail");
@@ -520,6 +571,7 @@ export function App() {
   const handleSelectStation = useCallback(
     (code: string) => {
       setSelectedTrainId(null);
+      setSelectedDepotCode(null);
       setFocusRouteOnly(false);
       setFollowTrain(false);
       setSelectedStationCode(code);
@@ -532,9 +584,26 @@ export function App() {
     [isMobile, stationMap],
   );
 
+  const handleSelectDepot = useCallback(
+    (code: string) => {
+      setSelectedTrainId(null);
+      setSelectedStationCode(null);
+      setFocusRouteOnly(false);
+      setFollowTrain(false);
+      setSelectedDepotCode(code);
+      if (isMobile) setMobileSheet("detail");
+      const dp = depotMap.get(code);
+      if (dp) {
+        setCameraTarget({ lon: dp.lon, lat: dp.lat, zoom: 12.0, nonce: Date.now() });
+      }
+    },
+    [isMobile, depotMap],
+  );
+
   const closeDetail = useCallback(() => {
     setSelectedTrainId(null);
     setSelectedStationCode(null);
+    setSelectedDepotCode(null);
     setFocusRouteOnly(false);
     setFollowTrain(false);
     if (isMobile) setMobileSheet("none");
@@ -569,10 +638,13 @@ export function App() {
 
   const showExplorer = !isMobile || mobileSheet === "explorer";
   const showDetail =
-    (Boolean(selectedTrain) || Boolean(selectedStation)) &&
+    (Boolean(selectedTrain) || Boolean(selectedStation) || Boolean(selectedDepot)) &&
     (!isMobile || mobileSheet === "detail");
   const showTimeMachine = isMobile ? mobileSheet === "timemachine" : timeMachineOpen;
-  const hasMobilePill = isMobile && mobileSheet === "none" && Boolean(selectedTrain || selectedStation);
+  const hasMobilePill =
+    isMobile &&
+    mobileSheet === "none" &&
+    Boolean(selectedTrain || selectedStation || selectedDepot);
 
   const cameraPadding = useMemo(() => {
     if (isMobile) {
@@ -664,14 +736,18 @@ export function App() {
         theme={theme}
         onToggleTheme={toggleTheme}
         onOpenInfo={openInfo}
+        alerts={alerts}
+        onOpenAlerts={() => setAlertsModalOpen(true)}
         searchOpen={searchOpen}
         onCloseSearch={() => setSearchOpen(false)}
         timeMachineOpen={showTimeMachine}
         onToggleTimeMachine={() => setTimeMachineOpen((v) => !v)}
         stations={stations}
+        depots={depots}
         trips={trips}
         onSelectTrain={handleSelectTrain}
         onSelectStation={handleSelectStation}
+        onSelectDepot={handleSelectDepot}
       />
 
       <main className="workspace" data-tm-open={showTimeMachine ? "true" : "false"}>
@@ -693,6 +769,7 @@ export function App() {
           maskGeoJson={maskGeoJson}
           railGeoJson={railGeoJson}
           stations={stations}
+          depots={depots}
           trips={trips}
           routeMap={routeMap}
           stationMap={stationMap}
@@ -706,11 +783,13 @@ export function App() {
           visibleLayers={visibleLayers}
           selectedTrain={selectedTrain}
           selectedStation={selectedStation}
+          selectedDepot={selectedDepot}
           focusRouteOnly={focusRouteOnly}
           followTrain={followTrain}
           cameraTarget={cameraTarget}
           onSelectTrain={handleSelectTrain}
           onSelectStation={handleSelectStation}
+          onSelectDepot={handleSelectDepot}
         />
 
         {showExplorer && (
@@ -767,6 +846,7 @@ export function App() {
             theme={theme}
             simSeconds={simSeconds}
             stationMap={stationMap}
+            consist={selectedConsist}
             focusRouteOnly={focusRouteOnly}
             onToggleFocusRoute={() => setFocusRouteOnly((f) => !f)}
             followTrain={followTrain}
@@ -802,6 +882,23 @@ export function App() {
             }
             onMinimizeMobile={isMobile ? () => setMobileSheet("none") : undefined}
             onSelectTrain={handleSelectTrain}
+            onClose={closeDetail}
+          />
+        )}
+
+        {showDetail && !selectedTrain && !selectedStation && selectedDepot && (
+          <DepotDetailPanel
+            depot={selectedDepot}
+            theme={theme}
+            onShare={() =>
+              void handleShareSelection(
+                `Depo ${selectedDepot.name}`,
+                null,
+                null,
+                selectedDepot.code,
+              )
+            }
+            onMinimizeMobile={isMobile ? () => setMobileSheet("none") : undefined}
             onClose={closeDetail}
           />
         )}
@@ -883,10 +980,18 @@ export function App() {
               onClick={() => setMobileSheet("detail")}
             >
               <span className="ka-plate">
-                {selectedTrain ? `KA ${selectedTrain.trip.number}` : selectedStation?.code}
+                {selectedTrain
+                  ? `KA ${selectedTrain.trip.number}`
+                  : selectedStation
+                    ? selectedStation.code
+                    : selectedDepot?.code}
               </span>
               <span className="train-name-text">
-                {selectedTrain ? selectedTrain.trip.name : `St. ${selectedStation?.name}`}
+                {selectedTrain
+                  ? selectedTrain.trip.name
+                  : selectedStation
+                    ? `St. ${selectedStation.name}`
+                    : `Depo ${selectedDepot?.name}`}
               </span>
               <span className="mobile-pill-link">Detail</span>
             </button>
@@ -926,6 +1031,11 @@ export function App() {
       </main>
 
       <DataInfoModal open={infoOpen} onClose={closeInfo} metadata={metadata} />
+      <AlertsModal
+        open={alertsModalOpen}
+        onClose={() => setAlertsModalOpen(false)}
+        alerts={alerts}
+      />
     </div>
   );
 }

@@ -1,0 +1,112 @@
+[
+  {
+    "id": "alert-1687",
+    "title": "KA 12 Turangga Gangguan Lokomotif",
+    "description": "Terima informasi bahwa lokomotif dinas KA 12 Turangga (Bandung - Surabaya Gubeng) terdapat kendala pada mesinnya berupa turbo tidak naik. Asp terkait sedang mencoba untuk reset kembali, namun rpm tinggi tidak mau turun.\nUntuk waktu keterlambatan kabar lanjut.\nSekian...",
+    "location": "Stasiun Cicalengka - Nagreg, KM184+6",
+    "category": "keterlambatan",
+    "severity": "warning",
+    "timestampWib": "2026-11-20 18:18:18",
+    "active": true,
+    "source": "Dzikri Raihan Akbar"
+  },
+  {
+    "id": "alert-1686",
+    "title": "Temperan Antara KA U103 Siantar Ekspres Dengan Mobil Angkutan Kota di Siantar",
+    "description": "Telah terjadi kecelakaan berupa temperan antara KA U103 Siantar Ekspres dengan Mobil Angkutan Kota, di sebuah Perlintasan KA, yang terletak di petak antara Stasiun Siantar - Stasiun Dolok Merangir, Sumatera Utara, pada Jumat, 20 November 2026, seoitar pukul 15.55 WIB.\nDiduga, bahwa Mobil Angkutan Kota tersebut mengangkut Bensin Timbunan, yang menyebabkan Mobil tersebut terbakar, bahkan menyebar ke Lokomotif KA U103, yaitu Lokomotif CC 201 77 04, yang membuat Lokomotif dan Mobil tersebut hangus terbakar. Untuk saat ini, belum terdapat informasi terkait adanya korban jiwa dari kecelakaan ini. Dan saat ini, 2 unit Lokomotif penolong dari Stasiun Tebing Tinggi, yaitu Lokomotif BB 203 78 03 dan Lokomotif BB 303 78 03 telah dipersiapkan.\n*Penulis juga mengucapkan turut berduka cita atas kecelakaan ini dan semoga Awak Sarana KA U103 dapat kembali pulih seperti sedia kala. Amin😇🙏\nDipublikasikan: Jumat, 20 November 2026, 16.40 WIB\nDiperbarui/Direvisi: Jumat, 20 November 2026, 18.12 WIB",
+    "location": "Petak Antara Stasiun Siantar - Stasiun Dolok Merangir, Sumatera Utara",
+    "category": "gangguan",
+    "severity": "emergency",
+    "timestampWib": "2026-11-20 16:40:55",
+    "active": true,
+    "source": "Arka RF Rawa Buaya"
+  },
+  {
+    "id": "alert-1685",
+    "title": "KA Siantar Menemper Sebuah Minibus",
+    "description": "Informasi Lanjut Tahap I Sebagai berikut :\nA. Korban Jiwa\n- No Info\nB. Kerusakan DLL\n- Kabin CC 201 77 04 MDN Terbakar Parah, tidak ada kemungkinan untuk melanjutkan perjalanan\n- KA U103 Siantar Express\n- Segera Dijalankannya KLB Kirim Lokomotif, akan dipersiapkan format dan informasi. Informasi Lanjut!\nC. Penyebab\n- Temperan Angkot di petak Stasiun Siantar - Baja Lingge",
+    "location": "KM 6, Petak Stasiun Siantar - Dolok Merangir",
+    "category": "gangguan",
+    "severity": "warning",
+    "timestampWib": "2026-11-20 16:31:26",
+    "active": true,
+    "source": "Timothy Chevon Elfrando Lumban Gaol"
+  },
+  {
+    "id": "alert-1684",
+    "title": "KA 282 Bengawan Mengalami Goncangan Keras",
+    "description": "🚨 Info Lintas Daop 3 Cirebon 🚨\nTerima laporan dari ASP KA 282 Bengawan, Bahwa telah terjadi Goncangan Keras di Petak Jalan Sindanglaut - Ciledug (Km 244+3/9 dan Km 248).\nTindak Lanjut:\n- Semua KA dari hulu BLB di Sta. Sindanglaut.\n- Demikian kabar lanjut.",
+    "location": "KM 244+3/9 Dan KM 248 Petak Jalan Sindanglaut - Ciledug",
+    "category": "gangguan",
+    "severity": "emergency",
+    "timestampWib": "2026-11-20 13:30:27",
+    "active": true,
+    "source": "adskhan"
+  },
+  {
+    "id": "alert-1683",
+    "title": "Rekayasa Pola Operasional Commuter Line Rangkasbitung",
+    "description": "🚨 KAI Commuter Update 🚨\nRekayasa Pola Operasi:\n- KA 1669D (Rangkasbitung-Tanah Abang) Perjalanan hanya sampai Stasiun Parung Panjang,\n- KA 1670D (Tanah Abang-Rangkasbitung) Keberangkatan awal dari Stasiun Parung Panjang menuju Stasiun Rangkasbitung.\nSumber : X / @CommuterLine",
+    "location": "Stasiun Parung Panjang (PRP)",
+    "category": "gangguan",
+    "severity": "warning",
+    "timestampWib": "2026-11-19 09:59:26",
+    "active": false,
+    "source": "Dzikri Raihan Akbar"
+  },
+  {
+    "id": "alert-1682",
+    "title": "KA 1640D Commuter Line Rangkasbitung Gangguan Traksi",
+    "description": "🚨KAI Commuter Update🚨\nMohon maaf atas keterlambatan perjalanan Commuter Line sehubungan adanya gangguan operasional pada KA 1640D (Tanah Abang-Parung Panjang) dan saat ini masih dalam penanganan petugas terkait.\nPerjalanan Commuter Line lintas Tanah Abang saat ini mengalami keterlambatan dan penyesuaian perjalanan Commuter Line lainnya menyesuaikan kondisi operasional di lintas.\nKami mengimbau kepada para pengguna untuk mengikuti arahan dan informasi dari petugas di lapangan. Informasi diupdate seiring dengan perkembangan di lokasi.\nSarana : 205JR44\nSumber : X / @CommuterLine",
+    "location": "Stasiun Kebayoran (KBY)",
+    "category": "keterlambatan",
+    "severity": "warning",
+    "timestampWib": "2026-11-19 09:40:54",
+    "active": false,
+    "source": "Dzikri Raihan Akbar"
+  },
+  {
+    "id": "alert-1681",
+    "title": "KA 1661D Commuter Line Rangkasbitung Gangguan Pintu",
+    "description": "🚨 KAI Commuter Update 🚨\nMohon maaf atas keterlambatan perjalanan Commuter Line di lintas Tanah Abang sehubungan dengan adanya gangguan operasional pada KA 1661D (Rangkasbitung-Tanah Abang) di Stasiun Rangkasbitung yang saat ini masih dalam penanganan petugas terkait.\nPerjalanan Commuter Line lintas Tanah Abang saat ini mengalami keterlambatan dan penyesuaian perjalanan KA menyesuaikan kondisi operasional di lintas.\nKami mengimbau kepada seluruh pengguna untuk tetap mengikuti arahan petugas di lapangan. Informasi lebih lanjut akan kami sampaikan seiring dengan perkembangan penanganan di lokasi.\nSarana : 205JR69\nSumber : X / @CommuterLine",
+    "location": "Stasiun Rangkasbitung (RK)",
+    "category": "keterlambatan",
+    "severity": "warning",
+    "timestampWib": "2026-11-19 09:38:06",
+    "active": false,
+    "source": "Dzikri Raihan Akbar"
+  },
+  {
+    "id": "alert-1680",
+    "title": "Warga Tertemper KA Sangkuriang di JPL 41A, Mojokerto",
+    "description": "Seorang pemuda bernama Dony Pratama (20), warga Krian, Sidoarjo, hilang nyawa setelah terlibat insiden dengan Kereta Api (KA) Sangkuriang di jalur Perlintasan Sebidang Mojokerto–Surabaya, Selasa (17/11).\nKata Aiptu  Aris Setiawan, Panit 1 Satlantas Polsek Magersari Polres Mojokerto Kota kejadian itu pertama kali diketahui setelah masinis KA Sangkuriang relasi Bandung–Ketapang. Sang masinis melaporkan adanya insiden lalu lintas kepada petugas Stasiun Mojokerto Kota. Informasi tersebut kemudian diteruskan petugas keamanan stasiun kepada penjaga perlintasan kereta api.\nPenjaga perlintasan yang menerima laporan langsung mengecek lokasi kejadian. Sementara itu, petugas keamanan stasiun melaporkan peristiwa tersebut ke Polsek Magersari. Petugas Polres Mojokerto Kota, Polsek Magersari, serta relawan PMI kemudian datang untuk melakukan penanganan. Selanjutnya, jasad korban dievakuasi ke RSUD dr. Wahidin Sudiro Husodo Kota Mojokerto.",
+    "location": "JPL 41A Mojokerto, Magersari",
+    "category": "keterlambatan",
+    "severity": "info",
+    "timestampWib": "2026-11-18 06:11:31",
+    "active": false,
+    "source": "Fadly Arrohman"
+  },
+  {
+    "id": "alert-1679",
+    "title": "KA 269B Matarmaja Gangguan Lokomotif",
+    "description": "#InfoLintas\nTerima informasi bahwa terdapat gangguan lokomotif dinas KA 269B Matarmaja [Malang - Pasar Senen] yaitu CC 201 89 17 SDT alami gangguan mendadak mati di jalan. Saat ini lokomotif KA 269B Matarmaja berhasil di restart dan rangkaian sudah dievakuasi ke stasiun terdekat, yaitu Stasiun Weleri.\nSaat ini perjalanan KA 269B Matarmaja masih menunggu lokomotif pengganti dari Depo Lokomotif Semarang Poncol guna mengantisipasi adanya gangguan lanjutan. Untuk waktu keterlambatan KA 269B Matarmaja sebanyak 70 menit (SR I).\nSekian...",
+    "location": "Stasiun Weleri (WLR)",
+    "category": "keterlambatan",
+    "severity": "warning",
+    "timestampWib": "2026-11-15 17:45:21",
+    "active": false,
+    "source": "Dzikri Raihan Akbar"
+  },
+  {
+    "id": "alert-1678",
+    "title": "KA 2B Anggrek Tertemper Orang",
+    "description": "🚨 INFO LINTAS 🚨\nTelah terjadi insiden KA 2B Anggrek relasi Gambir (GMR) – Surabaya Pasarturi (SBI) tertemper orang di KM 215+6 (area dekat wesel Stasiun Benowo).\n• Status: Sedang dalam penanganan petugas di lokasi.\n• Dampak: Perjalanan KA dari dan menuju arah Surabaya Pasarturi berpotensi mengalami keterlambatan.\nInfo lanjutan terkait kondisi rangkaian dan kelancaran lintas akan segera di-update.",
+    "location": "KM 215+6",
+    "category": "gangguan",
+    "severity": "emergency",
+    "timestampWib": "2026-11-14 18:24:01",
+    "active": false,
+    "source": "adskhan"
+  }
+]

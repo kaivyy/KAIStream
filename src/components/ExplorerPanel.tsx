@@ -74,6 +74,7 @@ const LAYER_ITEMS: Array<{ key: RailLayerKey; label: string; color: string; dash
   { key: "branch", label: "Jalur Cabang dan Lokal", color: "#46515c" },
   { key: "non_operational", label: "Jalur Non-Aktif / Non-KAI", color: "#6b7280", dashed: true },
   { key: "stations", label: "Marker dan Label Stasiun", color: "#b83d0a" },
+  { key: "depots", label: "Depo Sarana dan Balai Perawatan", color: "#d97706" },
   { key: "provinces", label: "Batas 6 Provinsi Pulau Jawa", color: "#766f63" },
 ];
 
