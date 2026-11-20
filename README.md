@@ -149,7 +149,25 @@ npm run preview
 
 Server pratinjau akan menyajikan aplikasi produksi pada `http://localhost:4173` atau port yang dikonfigurasikan.
 
-### 6. Pembaruan Dataset (Opsional)
+### 6. Deployment ke Vercel
+
+Aplikasi KAIStream dirancang sebagai Single Page Application (SPA) berbasis statis yang sepenuhnya siap di-deploy ke Vercel tanpa perlu konfigurasi server tambahan:
+
+<p align="left">
+  <a href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fkaivyy%2FKAIStream"><img src="https://vercel.com/button" alt="Deploy with Vercel" /></a>
+</p>
+
+**Langkah deployment melalui dashboard Vercel:**
+1. Masuk ke [vercel.com](https://vercel.com) menggunakan akun GitHub Anda.
+2. Klik **Add New...** lalu pilih **Project**.
+3. Pilih repositori **`kaivyy/KAIStream`** dari daftar repositori publik Anda dan klik **Import**.
+4. Vercel secara otomatis membaca setelan dari `vercel.json`:
+   - Framework Preset: `Vite`
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+5. Klik **Deploy**. Aplikasi akan aktif dengan domain instan (misalnya `kaistream.vercel.app`) dan CDN Edge Network untuk pengiriman dataset cepat.
+
+### 7. Pembaruan Dataset (Opsional)
 
 Repositori ini sudah menyertakan snapshot dataset lengkap di direktori `public/data/` sehingga aplikasi dapat langsung dijalankan tanpa langkah build data tambahan.
 
@@ -202,6 +220,7 @@ KAIStream/
 ├── LICENSE                   # Lisensi sumber terbuka MIT
 ├── package.json              # Konfigurasi dependensi dan skrip proyek
 ├── tsconfig.json             # Konfigurasi kompilator TypeScript
+├── vercel.json               # Konfigurasi routing SPA dan cache header CDN Vercel
 ├── vite.config.ts            # Konfigurasi bundler Vite
 └── vitest.config.ts          # Konfigurasi lingkungan uji Vitest
 ```
