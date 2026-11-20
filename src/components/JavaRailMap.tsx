@@ -1480,9 +1480,12 @@ export function JavaRailMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !cameraTarget) return;
+    zoomCooldownUntilRef.current = performance.now() + 500;
+    const currentZoom = map.getZoom();
+    const targetZoom = Math.min(map.getMaxZoom(), Math.max(currentZoom, cameraTarget.zoom));
     map.easeTo({
       center: [cameraTarget.lon, cameraTarget.lat],
-      zoom: Math.max(map.getMinZoom(), cameraTarget.zoom),
+      zoom: targetZoom,
       padding: latestRef.current.cameraPadding,
       duration: 450,
     });
