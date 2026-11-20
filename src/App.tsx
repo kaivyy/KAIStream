@@ -42,8 +42,10 @@ import {
 type MobileSheet = "none" | "explorer" | "detail" | "timemachine";
 
 interface SelectionHistoryItem {
-  kind: "train" | "station" | "depot";
-  id: string;
+  kind: "train" | "station" | "depot" | "explorer";
+  id?: string;
+  tab?: ExplorerTab;
+  trainMode?: TrainListMode;
   label: string;
 }
 
@@ -593,26 +595,68 @@ export function App() {
   const [selectionHistory, setSelectionHistory] = useState<SelectionHistoryItem[]>([]);
   selectionHistoryRef.current = selectionHistory;
 
+  const getExplorerHistoryItem = useCallback((): SelectionHistoryItem => {
+    let label = "Penjelajah Jawa";
+    if (explorerTab === "trains") {
+      label =
+        trainListMode === "nearby"
+          ? "Kereta Terdekat"
+          : trainListMode === "favorites"
+            ? "Kereta Favorit"
+            : "Daftar Kereta";
+    } else if (explorerTab === "stations") {
+      label = "Daftar Stasiun";
+    } else if (explorerTab === "routes") {
+      label = "Pencarian Rute";
+    } else if (explorerTab === "layers") {
+      label = "Lapisan Peta";
+    }
+
+    return {
+      kind: "explorer",
+      tab: explorerTab,
+      trainMode: explorerTab === "trains" ? trainListMode : undefined,
+      label,
+    };
+  }, [explorerTab, trainListMode]);
+
   const pushToHistoryIfDifferent = useCallback(
-    (nextKind: "train" | "station" | "depot", nextId: string) => {
+    (nextKind: "train" | "station" | "depot", nextId: string, fromExplorer = false) => {
       const curr = currentSelectionRef.current;
-      if (!curr) return;
+      const isExplorerOpen = isMobile ? mobileSheet === "explorer" : !explorerCollapsed;
+
+      if (!curr) {
+        if (fromExplorer || isExplorerOpen) {
+          const expItem = getExplorerHistoryItem();
+          setSelectionHistory([expItem]);
+        }
+        return;
+      }
+
       if (curr.kind === nextKind && curr.id === nextId) return;
+
       setSelectionHistory((prev) => {
         const last = prev[prev.length - 1];
-        if (last && last.kind === curr.kind && last.id === curr.id) {
+        const nextList = [...prev];
+
+        if (fromExplorer && last?.kind !== "explorer") {
+          nextList.push(getExplorerHistoryItem());
+        } else if (last && last.kind === curr.kind && last.id === curr.id) {
           return prev;
+        } else {
+          nextList.push(curr);
         }
-        return [...prev.slice(-19), curr];
+
+        return nextList.slice(-19);
       });
     },
-    [],
+    [isMobile, mobileSheet, explorerCollapsed, getExplorerHistoryItem],
   );
 
   const applySelectTrain = useCallback(
-    (tripId: string, addToHistory = true) => {
+    (tripId: string, addToHistory = true, fromExplorer = false) => {
       if (addToHistory) {
-        pushToHistoryIfDifferent("train", tripId);
+        pushToHistoryIfDifferent("train", tripId, fromExplorer);
       }
       setSelectedStationCode(null);
       setSelectedDepotCode(null);
@@ -638,9 +682,9 @@ export function App() {
   );
 
   const applySelectStation = useCallback(
-    (code: string, addToHistory = true) => {
+    (code: string, addToHistory = true, fromExplorer = false) => {
       if (addToHistory) {
-        pushToHistoryIfDifferent("station", code);
+        pushToHistoryIfDifferent("station", code, fromExplorer);
       }
       setSelectedTrainId(null);
       setSelectedDepotCode(null);
@@ -657,9 +701,9 @@ export function App() {
   );
 
   const applySelectDepot = useCallback(
-    (code: string, addToHistory = true) => {
+    (code: string, addToHistory = true, fromExplorer = false) => {
       if (addToHistory) {
-        pushToHistoryIfDifferent("depot", code);
+        pushToHistoryIfDifferent("depot", code, fromExplorer);
       }
       setSelectedTrainId(null);
       setSelectedStationCode(null);
@@ -676,18 +720,28 @@ export function App() {
   );
 
   const handleSelectTrain = useCallback(
-    (tripId: string) => applySelectTrain(tripId, true),
+    (tripId: string) => applySelectTrain(tripId, true, false),
     [applySelectTrain],
   );
 
   const handleSelectStation = useCallback(
-    (code: string) => applySelectStation(code, true),
+    (code: string) => applySelectStation(code, true, false),
     [applySelectStation],
   );
 
   const handleSelectDepot = useCallback(
-    (code: string) => applySelectDepot(code, true),
+    (code: string) => applySelectDepot(code, true, false),
     [applySelectDepot],
+  );
+
+  const handleSelectTrainFromExplorer = useCallback(
+    (tripId: string) => applySelectTrain(tripId, true, true),
+    [applySelectTrain],
+  );
+
+  const handleSelectStationFromExplorer = useCallback(
+    (code: string) => applySelectStation(code, true, true),
+    [applySelectStation],
   );
 
   const handleGoBack = useCallback(() => {
@@ -697,14 +751,31 @@ export function App() {
     if (!target) return;
     setSelectionHistory((prev) => prev.slice(0, -1));
 
-    if (target.kind === "train") {
+    if (target.kind === "train" && target.id) {
       applySelectTrain(target.id, false);
-    } else if (target.kind === "station") {
+    } else if (target.kind === "station" && target.id) {
       applySelectStation(target.id, false);
-    } else if (target.kind === "depot") {
+    } else if (target.kind === "depot" && target.id) {
       applySelectDepot(target.id, false);
+    } else if (target.kind === "explorer") {
+      setSelectedTrainId(null);
+      setSelectedStationCode(null);
+      setSelectedDepotCode(null);
+      setFocusRouteOnly(false);
+      setFollowTrain(false);
+      if (target.tab) {
+        setExplorerTab(target.tab);
+      }
+      if (target.trainMode) {
+        setTrainListMode(target.trainMode);
+      }
+      if (isMobile) {
+        setMobileSheet("explorer");
+      } else {
+        setExplorerCollapsed(false);
+      }
     }
-  }, [applySelectTrain, applySelectStation, applySelectDepot]);
+  }, [isMobile, applySelectTrain, applySelectStation, applySelectDepot]);
 
   handleGoBackRef.current = handleGoBack;
 
@@ -940,8 +1011,8 @@ export function App() {
             onResetFilters={resetFilters}
             selectedTrainId={selectedTrainId}
             selectedStationCode={selectedStationCode}
-            onSelectTrain={handleSelectTrain}
-            onSelectStation={handleSelectStation}
+            onSelectTrain={handleSelectTrainFromExplorer}
+            onSelectStation={handleSelectStationFromExplorer}
             basemap={basemap}
             onChangeBasemap={setBasemap}
             rainRadarEnabled={rainRadarEnabled}
