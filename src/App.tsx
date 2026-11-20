@@ -1166,20 +1166,20 @@ export function App() {
             {canGoBack && (
               <button
                 type="button"
-                className="panel-back-btn"
+                className="panel-header-btn"
                 onClick={handleGoBack}
                 aria-label={backLabel ? `Kembali ke ${backLabel}` : "Kembali ke pilihan sebelumnya"}
                 title={backLabel ? `Kembali ke ${backLabel}` : "Kembali"}
                 style={{
-                  minWidth: "32px",
+                  width: "32px",
                   height: "32px",
-                  padding: "0 8px",
+                  minWidth: "32px",
                   marginRight: "2px",
                 }}
               >
                 <svg
-                  width="14"
-                  height="14"
+                  width="16"
+                  height="16"
                   viewBox="0 0 16 16"
                   fill="none"
                   stroke="currentColor"
@@ -1216,11 +1216,30 @@ export function App() {
             </button>
             <button
               type="button"
-              className="icon-btn"
+              className="panel-header-btn"
               onClick={closeDetail}
-              aria-label="Hapus pilihan"
+              aria-label="Tutup pilihan"
+              title="Tutup"
+              style={{
+                width: "32px",
+                height: "32px",
+                minWidth: "32px",
+                marginLeft: "2px",
+              }}
             >
-              Tutup
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 4L4 12M4 4l8 8" />
+              </svg>
             </button>
           </div>
         )}

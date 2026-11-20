@@ -75,18 +75,42 @@ export function TrainDetailPanel({
   return (
     <aside className="detail-panel" aria-label={`Detail perjalanan ${train.trip.name}`}>
       <div className="panel-header-bar">
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, flex: 1 }}>
+        <div style={{ minWidth: 0, flex: 1, paddingRight: "8px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+            <span
+              aria-hidden="true"
+              style={{
+                width: "10px",
+                height: "10px",
+                borderRadius: "2px",
+                backgroundColor: liveryColor,
+                flexShrink: 0,
+              }}
+            />
+            <span className="ka-plate">{formatTrainCode(train.trip.number, train.trip.category)}</span>
+            <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+              {train.trip.category === "highspeed"
+                ? "Rel 1435 mm"
+                : CATEGORY_LABELS[train.trip.category]}
+            </span>
+          </div>
+          <h2 className="panel-title-serif" style={{ fontSize: "18px" }}>
+            {train.trip.name}
+          </h2>
+        </div>
+
+        <div className="panel-header-actions">
           {onBack && (
             <button
               type="button"
-              className="panel-back-btn"
+              className="panel-header-btn"
               onClick={onBack}
               aria-label={backLabel ? `Kembali ke ${backLabel}` : "Kembali ke pilihan sebelumnya"}
               title={backLabel ? `Kembali ke ${backLabel}` : "Kembali"}
             >
               <svg
-                width="14"
-                height="14"
+                width="16"
+                height="16"
                 viewBox="0 0 16 16"
                 fill="none"
                 stroke="currentColor"
@@ -98,53 +122,53 @@ export function TrainDetailPanel({
                 <line x1="13" y1="8" x2="3" y2="8" />
                 <polyline points="7.5 3.5 3 8 7.5 12.5" />
               </svg>
-              <span>Kembali</span>
             </button>
           )}
 
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-              <span
-                aria-hidden="true"
-                style={{
-                  width: "10px",
-                  height: "10px",
-                  borderRadius: "2px",
-                  backgroundColor: liveryColor,
-                  flexShrink: 0,
-                }}
-              />
-              <span className="ka-plate">{formatTrainCode(train.trip.number, train.trip.category)}</span>
-              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                {train.trip.category === "highspeed"
-                  ? "Rel 1435 mm"
-                  : CATEGORY_LABELS[train.trip.category]}
-              </span>
-            </div>
-            <h2 className="panel-title-serif" style={{ fontSize: "18px" }}>
-              {train.trip.name}
-            </h2>
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
           {onMinimizeMobile && (
             <button
               type="button"
-              className="icon-btn"
+              className="panel-header-btn"
               onClick={onMinimizeMobile}
-              aria-label="Perkecil panel detail ke peta penuh"
+              aria-label="Sembunyikan panel ke peta penuh"
+              title="Sembunyikan / Tampilkan ke peta"
             >
-              Peta
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M4 6l4-3 4 3M4 10l4 3 4-3" />
+              </svg>
             </button>
           )}
+
           <button
             type="button"
-            className="icon-btn"
+            className="panel-header-btn"
             onClick={onClose}
             aria-label="Tutup panel detail kereta"
+            title="Tutup"
           >
-            Tutup
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 4L4 12M4 4l8 8" />
+            </svg>
           </button>
         </div>
       </div>
