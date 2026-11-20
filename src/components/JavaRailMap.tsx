@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?url";
+
+if (typeof (maplibregl as any).setWorkerUrl === "function") {
+  (maplibregl as any).setWorkerUrl(maplibreWorkerUrl);
+}
 import {
   applyLateralOffset,
   computeArticulatedConsist,
@@ -606,7 +611,7 @@ export function JavaRailMap({
     };
 
     let fellBack = false;
-    map.on("error", (ev) => {
+    map.on("error", (ev: any) => {
       const msg = String(ev?.error?.message ?? "");
       const hasSource = "sourceId" in ev && Boolean(ev.sourceId);
       if (
@@ -1066,7 +1071,7 @@ export function JavaRailMap({
       setStyleReady((n) => n + 1);
     });
 
-    map.on("click", "trains-layer", (e) => {
+    map.on("click", "trains-layer", (e: any) => {
       const feat = e.features?.[0];
       const id = feat?.properties?.id;
       if (typeof id === "string") {
@@ -1075,7 +1080,7 @@ export function JavaRailMap({
     });
 
     for (const stationLayerId of ["stations-major-circle", "stations-minor-circle"]) {
-      map.on("click", stationLayerId, (e) => {
+      map.on("click", stationLayerId, (e: any) => {
         const feat = e.features?.[0];
         const code = feat?.properties?.code;
         if (typeof code === "string") {
@@ -1638,7 +1643,7 @@ export function JavaRailMap({
                   !isPinchingRef.current &&
                   !isDraggingRef.current &&
                   !map.isZooming() &&
-                  !map.isEasing() &&
+                  !(map as any).isEasing?.() &&
                   !map.scrollZoom.isActive() &&
                   performance.now() >= zoomCooldownUntilRef.current;
 

@@ -15,11 +15,11 @@
 <p align="center">
   <a href="https://github.com/kaivyy/KAIStream/actions/workflows/ci.yml"><img src="https://github.com/kaivyy/KAIStream/actions/workflows/ci.yml/badge.svg" alt="Status CI" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lisensi-MIT-blue.svg" alt="Lisensi MIT" /></a>
-  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.8-3178c6.svg?logo=typescript&logoColor=white" alt="TypeScript 5.8" /></a>
-  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19-61dafb.svg?logo=react&logoColor=black" alt="React 19" /></a>
-  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-6.4-646cff.svg?logo=vite&logoColor=white" alt="Vite 6.4" /></a>
-  <a href="https://maplibre.org/"><img src="https://img.shields.io/badge/MapLibre_GL-5.1-396ebd.svg?logo=maplibre&logoColor=white" alt="MapLibre GL 5.1" /></a>
-  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/Pengujian-13%20Lulus-44bb44.svg?logo=vitest&logoColor=white" alt="13 Pengujian Lulus" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-3178c6.svg?logo=typescript&logoColor=white" alt="TypeScript 5.9" /></a>
+  <a href="https://react.dev/"><img src="https://img.shields.io/badge/React-19.3-61dafb.svg?logo=react&logoColor=black" alt="React 19.3" /></a>
+  <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-8.3-646cff.svg?logo=vite&logoColor=white" alt="Vite 8.3" /></a>
+  <a href="https://maplibre.org/"><img src="https://img.shields.io/badge/MapLibre_GL-6.19-396ebd.svg?logo=maplibre&logoColor=white" alt="MapLibre GL 6.19" /></a>
+  <a href="https://vitest.dev/"><img src="https://img.shields.io/badge/Vitest-5.1-44bb44.svg?logo=vitest&logoColor=white" alt="Vitest 5.1" /></a>
 </p>
 
 ---
