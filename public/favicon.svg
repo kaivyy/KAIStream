@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="KAIStream">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#1A3B5D" />
+  <rect
+    x="4.5"
+    y="4.5"
+    width="55"
+    height="55"
+    rx="11.5"
+    fill="none"
+    stroke="#F7F5F0"
+    stroke-opacity="0.2"
+    stroke-width="1.2"
+  />
+  <path
+    d="M21 15 L21 49"
+    fill="none"
+    stroke="#F7F5F0"
+    stroke-width="6.5"
+    stroke-linecap="round"
+  />
+  <path
+    d="M21 32 C29 32 35 44 45.5 48.5"
+    fill="none"
+    stroke="#F7F5F0"
+    stroke-width="6.5"
+    stroke-linecap="round"
+  />
+  <path
+    d="M21 32 C29 32 35 20 45.5 15.5"
+    fill="none"
+    stroke="#F04E3E"
+    stroke-width="6.5"
+    stroke-linecap="round"
+  />
+  <circle cx="21" cy="32" r="6.8" fill="#F7F5F0" stroke="#1A3B5D" stroke-width="2" />
+  <circle cx="21" cy="32" r="2.9" fill="#E03E2D" />
+</svg>

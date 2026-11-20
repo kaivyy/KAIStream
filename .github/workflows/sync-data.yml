@@ -1,0 +1,55 @@
+name: Sync Java Rail Data Daily
+
+on:
+  schedule:
+    - cron: '5 17 * * *' # 00:05 WIB every day
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install system PDF tools (poppler-utils)
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install Python build dependencies
+        run: python -m pip install --upgrade pip && pip install networkx beautifulsoup4
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run automated Java schedule & network sync
+        run: python3 scripts/build_java_data.py --auto --output-dir public/data
+
+      - name: Verify dataset integrity & build
+        run: npm test && npm run build
+
+      - name: Commit updated data snapshot if changed
+        run: |
+          if [ -n "$(git status --porcelain public/data)" ]; then
+            git config user.name "kaistream-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add public/data/*.json
+            SNAP_DATE="$(python3 -c "import json; print(json.load(open('public/data/metadata.json')).get('scheduleSnapshotDate','unknown'))")"
+            git commit -m "chore(data): sync Java railway schedule (${SNAP_DATE})"
+            git push
+          else
+            echo "No dataset changes to commit."
+          fi

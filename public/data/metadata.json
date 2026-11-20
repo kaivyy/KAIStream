@@ -1,0 +1,179 @@
+{
+  "generatedAt": "2026-11-20T02:35:48.604208+00:00",
+  "scheduleSnapshotDate": "2026-11-20",
+  "autoSync": {
+    "enabled": true,
+    "cadence": "Harian 00:05 WIB"
+  },
+  "timezone": "Asia/Jakarta",
+  "utcOffsetHours": 7,
+  "coverage": "Pulau Jawa (6 Provinsi)",
+  "activeProviders": [
+    "alurail_public_data",
+    "comuline_api",
+    "sobat_krl_gtfs_enrichment",
+    "djka_whoosh_gapeka_2025"
+  ],
+  "failoverMode": false,
+  "officialDjkaDecree": "KP-DJKA 116 TAHUN 2026 (GAPEKA Jawa 2026), KP-DJKA 224 TAHUN 2024 (GAPEKA Jawa 2025) & KP-DJKA 2 TAHUN 2025 (GAPEKA KCJB Whoosh)",
+  "officialDecreeCatalog": [
+    {
+      "year": "2026",
+      "category": "Peraturan Dirjen Perkeretaapian",
+      "title": "KEPUTUSAN DIREKTUR JENDERAL PERKERETAAPIAN NOMOR KP-DJKA 119 TAHUN 2026",
+      "description": "GRAFIK PERJALANAN KERETA API (GAPEKA) PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN SELATAN TAHUN 2026",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202611/KP DJKA 119 TAHUN 2026 GAPEKA SUMBAGSEL.pdf"
+    },
+    {
+      "year": "2026",
+      "category": "Peraturan Dirjen Perkeretaapian",
+      "title": "KEPUTUSAN DIREKTUR JENDERAL PERKERETAAPIAN NOMOR KP-DJKA 118 TAHUN 2026",
+      "description": "GRAFIK PERJALANAN KERETA API (GAPEKA) PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN BARAT TAHUN 2026",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202611/KP DJKA 118 TAHUN 2026 GAPEKA SUMBAGBAR.pdf"
+    },
+    {
+      "year": "2026",
+      "category": "Peraturan Dirjen Perkeretaapian",
+      "title": "KEPUTUSAN DIREKTUR JENDERAL PERKERETAAPIAN NOMOR KP-DJKA 117 TAHUN 2026",
+      "description": "RAFIK PERJALANAN KERETA API (GAPEKA) PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN UTARA TAHUN 2026",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202611/KP DJKA 117 TAHUN 2026 GAPEKA SUMBAGUT.pdf"
+    },
+    {
+      "year": "2026",
+      "category": "Peraturan Dirjen Perkeretaapian",
+      "title": "KEPUTUSAN DIREKTUR JENDERAL PERKERETAAPIAN NOMOR KP-DJKA 116 TAHUN 2026",
+      "description": "GRAFIK PERJALANAN KERETA API (GAPEKA) PADA JARINGAN JALUR KERETA API NASIONAL DI JAWA TAHUN 2026",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202611/KP DJKA 116 TAHUN 2026 GAPEKA JAWA.pdf"
+    },
+    {
+      "year": "2025",
+      "category": "Keputusan Direktur Jenderal Perkeretaapian",
+      "title": "KP-DJKA 2 TAHUN 2025",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL KERETA API KECEPATAN TINGGI JAKARTA - BANDUNG TAHUN 2025",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202501/KP-DJKA 2 Tahun 2025_GAPEKA KA KECEPATAN TINGGI JAKARTA - BANDUNG.pdf"
+    },
+    {
+      "year": "2024",
+      "category": "Keputusan Direktur Jenderal Perkeretaapian",
+      "title": "KP \u2013 DJKA 226 TAHUN 2024",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN BARAT TAHUN 2025",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202501/KP-DJKA 226 TAHUN 2024_GAPEKA_SUMBAGBAR TAHUN 2025.pdf"
+    },
+    {
+      "year": "2024",
+      "category": "Keputusan Direktur Jenderal Perkeretaapian",
+      "title": "KP \u2013 DJKA 227 TAHUN 2024",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN SELATAN TAHUN 2025",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202501/KP-DJKA 227 TAHUN 2024_GAPEKA_SUMBAGSEL TAHUN 2025.pdf"
+    },
+    {
+      "year": "2024",
+      "category": "Keputusan Direktur Jenderal Perkeretaapian",
+      "title": "KP \u2013 DJKA 225 TAHUN 2024",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN UTARA TAHUN 2025",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202501/KP-DJKA 225 TAHUN 2024_GAPEKA_SUMBAGUT TAHUN 2025.pdf"
+    },
+    {
+      "year": "2024",
+      "category": "Keputusan Direktur Jenderal Perkeretaapian",
+      "title": "KP - DJKA 224 TAHUN 2024",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI JAWA TAHUN 2025",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202501/KP-DJKA 224 TAHUN 2024_GAPEKA JAWA TAHUN 2025.pdf"
+    },
+    {
+      "year": "2023",
+      "category": "Keputusan Direktur Jendral Perkeretaapian",
+      "title": "KP-DJKA 67 TAHUN 2023",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI JAWA TAHUN 2023",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202305/KP-DJKA_67_TAHUN_2023_GAPEKA_JAWA_2023.pdf"
+    },
+    {
+      "year": "2023",
+      "category": "Keputusan Direktur Jendral Perkeretaapian",
+      "title": "KP-DJKA 68 TAHUN 2023",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN UTARA TAHUN 2023",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202305/KP-DJKA_68_TAHUN_2023_GAPEKA_SUMBAGUT_2023.pdf"
+    },
+    {
+      "year": "2023",
+      "category": "Keputusan Direktur Jendral Perkeretaapian",
+      "title": "KP-DJKA 69 TAHUN 2023",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN BARAT TAHUN 2023",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202305/KP-DJKA_69_TAHUN_2023_GAPEKA_SUMBAGBAR_2023.pdf"
+    },
+    {
+      "year": "2023",
+      "category": "Keputusan Direktur Jendral Perkeretaapian",
+      "title": "KP-DJKA 70 TAHUN 2023",
+      "description": "GRAFIK PERJALANAN KERETA API PADA JARINGAN JALUR KERETA API NASIONAL DI SUMATERA BAGIAN SELATAN TAHUN 2023",
+      "download_url": "https://djka.kemenhub.go.id/uploads/202305/KP-DJKA_70_TAHUN_2023_GAPEKA_SUMBAGSEL_2023.pdf"
+    },
+    {
+      "year": "2011",
+      "category": "Peraturan Menteri",
+      "title": "Peraturan Menteri Perhubungan Nomor PM 35 Tahun 2011",
+      "description": "Tata Cara dan Standar Pembuatan Grafik Perjalanan Kereta Api",
+      "download_url": "https://jdih.dephub.go.id/peraturan/detail?data=0VijZcqq0QG4Zda1UAKjQo4jtEjFUeAwl4Ups6bJC0e24vX8Qz4yUEP4EqWrNTWTps8gcdmq06EsR4vUb87cq5Ng4ZBI59VRgAQ49dA2QWFwZvGoxRMoR5dZQ8EQtS4wz8qsI8QBWnIR5jsCqSxiqIIeWO"
+    },
+    {
+      "year": "2014",
+      "category": "Peraturan Dirjen Perkeretaapian",
+      "title": "PERATURAN DIREKTUR JENDERAL PERKERETAAPIAN \nNOMOR  KA.407/SK.162/DJKA/4/14",
+      "description": "Grafik Perjalanan Kereta Api Tahun 2014",
+      "download_url": "https://jdih.dephub.go.id/peraturan/detail?data=EnD3cwsWT4vEg0DQGKAMN98m8TVoIlPfw8hdnwPPvpf18LN7IMTMnGi8LW86zb2JSk4JEmFbKf08n48aUtr4fMrW8LSFhrvGv6f4OcOkcj85vqAIqFTiUAaYVFpXuCc3TA7BHRxrLRNeYI9AmgUjbuDUeT"
+    },
+    {
+      "year": "2013",
+      "category": "Peraturan Dirjen Perkeretaapian",
+      "title": "PERATURAN DIREKTUR JENDERAL PERKERETAAPIAN\nNOMOR : KA.407/SK.26/DJKA/2/13",
+      "description": "GRAFIK PERJALANAN KERETA API (GAPEKA) TAHUN 2013",
+      "download_url": "https://jdih.dephub.go.id/peraturan/detail?data=G4JIXeOp3CW2lcqMhflxvR4EtL1TE0Fzr4ZAFhw8sSaz4Tz04THP8J14pHLp4D773p8QjhzoJ3hj74E0wV6b5cYq8W5Gju0B9Xk4qBpI0hhZti22DUsbrwSBuBSKr1UXS0sCL7Am8qgjvN7Dl7CI6GbacS"
+    }
+  ],
+  "sources": [
+    "OpenStreetMap via Geofabrik Pulau Jawa (ODbL, \u00a9 OpenStreetMap contributors)",
+    "Kementerian Perhubungan RI, Direktorat Jenderal Perkeretaapian (GAPEKA KP-DJKA 116/2026, KP-DJKA 224/2024 & KP-DJKA 2/2025 Whoosh)",
+    "Jadwal Resmi Kereta Cepat Whoosh (62 KA Reguler) via Kemenhub DJKA (KP-DJKA 2 Tahun 2025)",
+    "Jadwal & Lintas Stasiun KAI Resmi (2026-11-20) via AluRail Public Data",
+    "Referensi Jadwal KRL Commuter Line Jabodetabek via Comuline API",
+    "Enrichment GTFS KRL Malam & Pola Hari Kerja via Sobat KRL Master Data (ODbL 1.0)",
+    "Referensi Koordinat Stasiun Nasional via oktavianrizalm/TrackingKRL",
+    "Batas Provinsi Indonesia (BAKOSURTANAL / superpikar indonesia-geojson)",
+    "Natural Earth 10m Land Coastlines (Public Domain)"
+  ],
+  "counts": {
+    "provinces": 6,
+    "railSegments": 12244,
+    "operationalRailSegments": 11317,
+    "highspeedSegments": 316,
+    "singleTrackSegments": 1636,
+    "doubleTrackSegments": 5014,
+    "tripleTrackSegments": 1004,
+    "quadPlusTrackSegments": 3663,
+    "bridgeSegments": 2494,
+    "tunnelSegments": 153,
+    "stations": 461,
+    "majorStations": 111,
+    "routeShapes": 368,
+    "trips": 2490,
+    "whooshTrips": 62,
+    "weekdayOnlyTrips": 32,
+    "passTimingPoints": 13215,
+    "singleTrackAudit": {
+      "checkedLegs": 958,
+      "overlapNotices": 31
+    },
+    "validationErrors": 0,
+    "skippedUpstreamAnomalies": 1
+  },
+  "javaBounds": [
+    [
+      104.9,
+      -8.98
+    ],
+    [
+      114.75,
+      -5.68
+    ]
+  ]
+}

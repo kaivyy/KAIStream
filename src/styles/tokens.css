@@ -1,0 +1,67 @@
+/* KAIStream design tokens verified against WCAG AA (DESIGN.md). */
+
+:root {
+  --bg-canvas: #f7f5f0;
+  --bg-mask: #e8e3d8;
+  --bg-surface: #ffffff;
+  --bg-recessed: #efece5;
+  --bg-hover: #e7e2d8;
+
+  --text-primary: #171f26;
+  --text-secondary: #46515c;
+
+  --border-subtle: #d4cec3;
+  --border-strong: #766f63;
+
+  --color-core-primary: #1a3b5d;
+  --color-core-primary-ink: #ffffff;
+  --color-core-secondary: #145a40;
+  --color-core-secondary-ink: #ffffff;
+  --color-accent: #b83d0a;
+  --color-accent-ink: #ffffff;
+
+  --color-status-amber: #8a4f00;
+  --color-status-muted: #4b5563;
+  --color-error: #991b1b;
+
+  --focus-ring: #b83d0a;
+  --shadow-panel: 0 2px 10px rgba(23, 31, 38, 0.1), 0 1px 2px rgba(23, 31, 38, 0.08);
+  --shadow-floating: 0 6px 20px rgba(23, 31, 38, 0.14), 0 2px 4px rgba(23, 31, 38, 0.08);
+
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-panel: 6px;
+  --radius-control: 4px;
+  --radius-plate: 2px;
+}
+
+[data-theme="dark"] {
+  --bg-canvas: #10161d;
+  --bg-mask: #0b1015;
+  --bg-surface: #17202a;
+  --bg-recessed: #1e2935;
+  --bg-hover: #263443;
+
+  --text-primary: #eef2f6;
+  --text-secondary: #a8b5c4;
+
+  --border-subtle: #2e3d4d;
+  --border-strong: #6b8096;
+
+  --color-core-primary: #7bb5f5;
+  --color-core-primary-ink: #0e1720;
+  --color-core-secondary: #5ad1a0;
+  --color-core-secondary-ink: #0d1a15;
+  --color-accent: #ff864c;
+  --color-accent-ink: #18100c;
+
+  --color-status-amber: #f0b84c;
+  --color-status-muted: #9eadb9;
+  --color-error: #fca5a5;
+
+  --focus-ring: #ff864c;
+  --shadow-panel: 0 4px 14px rgba(0, 0, 0, 0.42), 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-floating: 0 8px 26px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4);
+}
