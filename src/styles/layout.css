@@ -967,6 +967,54 @@
   padding: 8px 12px;
 }
 
+.panel-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 10px;
+  background-color: var(--bg-recessed);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 65%, transparent);
+  border-radius: var(--radius-control);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.panel-back-btn:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--border-subtle);
+  color: var(--accent-primary);
+}
+
+.panel-back-btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.panel-back-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .panel-back-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    justify-content: center;
+  }
+  .panel-back-btn span {
+    display: none;
+  }
+}
+
 .detail-section {
   padding: 10px 12px;
   border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 55%, transparent);

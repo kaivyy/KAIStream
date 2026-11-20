@@ -41,6 +41,12 @@ import {
 
 type MobileSheet = "none" | "explorer" | "detail" | "timemachine";
 
+interface SelectionHistoryItem {
+  kind: "train" | "station" | "depot";
+  id: string;
+  label: string;
+}
+
 async function fetchJson<T>(url: string, noStore = false): Promise<T> {
   const res = await fetch(url, noStore ? { cache: "no-store" } : undefined);
   if (!res.ok) {
@@ -207,7 +213,10 @@ export function App() {
     return () => cancelAnimationFrame(rafId);
   }, [playing, speed]);
 
-  // Keyboard Space shortcut for Play/Pause and '/' shortcut for Quick Search when not typing
+  const selectionHistoryRef = useRef<SelectionHistoryItem[]>([]);
+  const handleGoBackRef = useRef<() => void>(() => {});
+
+  // Keyboard Space shortcut for Play/Pause, '/' for Quick Search, Backspace/Alt+Left for Back
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement | null)?.tagName;
@@ -216,6 +225,16 @@ export function App() {
         e.preventDefault();
         setSearchOpen(true);
         return;
+      }
+      if (
+        (e.altKey && e.key === "ArrowLeft") ||
+        (e.key === "Backspace" && tag !== "BUTTON")
+      ) {
+        if (selectionHistoryRef.current.length > 0) {
+          e.preventDefault();
+          handleGoBackRef.current();
+          return;
+        }
       }
       if (e.code === "Space" && tag !== "BUTTON") {
         e.preventDefault();
@@ -543,8 +562,58 @@ export function App() {
     [depotMap, selectedDepotCode],
   );
 
-  const handleSelectTrain = useCallback(
-    (tripId: string) => {
+  const currentSelectionItem = useMemo<SelectionHistoryItem | null>(() => {
+    if (selectedTrain) {
+      return {
+        kind: "train",
+        id: selectedTrain.trip.id,
+        label: `KA ${selectedTrain.trip.number} ${selectedTrain.trip.name}`,
+      };
+    }
+    if (selectedStation) {
+      return {
+        kind: "station",
+        id: selectedStation.code,
+        label: `St. ${selectedStation.name}`,
+      };
+    }
+    if (selectedDepot) {
+      return {
+        kind: "depot",
+        id: selectedDepot.code,
+        label: `Depo ${selectedDepot.name}`,
+      };
+    }
+    return null;
+  }, [selectedTrain, selectedStation, selectedDepot]);
+
+  const currentSelectionRef = useRef<SelectionHistoryItem | null>(null);
+  currentSelectionRef.current = currentSelectionItem;
+
+  const [selectionHistory, setSelectionHistory] = useState<SelectionHistoryItem[]>([]);
+  selectionHistoryRef.current = selectionHistory;
+
+  const pushToHistoryIfDifferent = useCallback(
+    (nextKind: "train" | "station" | "depot", nextId: string) => {
+      const curr = currentSelectionRef.current;
+      if (!curr) return;
+      if (curr.kind === nextKind && curr.id === nextId) return;
+      setSelectionHistory((prev) => {
+        const last = prev[prev.length - 1];
+        if (last && last.kind === curr.kind && last.id === curr.id) {
+          return prev;
+        }
+        return [...prev.slice(-19), curr];
+      });
+    },
+    [],
+  );
+
+  const applySelectTrain = useCallback(
+    (tripId: string, addToHistory = true) => {
+      if (addToHistory) {
+        pushToHistoryIfDifferent("train", tripId);
+      }
       setSelectedStationCode(null);
       setSelectedDepotCode(null);
       setSelectedTrainId(tripId);
@@ -565,11 +634,14 @@ export function App() {
         }
       }
     },
-    [isMobile, simulatedTrains, stationMap],
+    [isMobile, pushToHistoryIfDifferent, simulatedTrains, stationMap],
   );
 
-  const handleSelectStation = useCallback(
-    (code: string) => {
+  const applySelectStation = useCallback(
+    (code: string, addToHistory = true) => {
+      if (addToHistory) {
+        pushToHistoryIfDifferent("station", code);
+      }
       setSelectedTrainId(null);
       setSelectedDepotCode(null);
       setFocusRouteOnly(false);
@@ -581,11 +653,14 @@ export function App() {
         setCameraTarget({ lon: st.lon, lat: st.lat, zoom: 10.6, nonce: Date.now() });
       }
     },
-    [isMobile, stationMap],
+    [isMobile, pushToHistoryIfDifferent, stationMap],
   );
 
-  const handleSelectDepot = useCallback(
-    (code: string) => {
+  const applySelectDepot = useCallback(
+    (code: string, addToHistory = true) => {
+      if (addToHistory) {
+        pushToHistoryIfDifferent("depot", code);
+      }
       setSelectedTrainId(null);
       setSelectedStationCode(null);
       setFocusRouteOnly(false);
@@ -597,8 +672,44 @@ export function App() {
         setCameraTarget({ lon: dp.lon, lat: dp.lat, zoom: 12.0, nonce: Date.now() });
       }
     },
-    [isMobile, depotMap],
+    [isMobile, pushToHistoryIfDifferent, depotMap],
   );
+
+  const handleSelectTrain = useCallback(
+    (tripId: string) => applySelectTrain(tripId, true),
+    [applySelectTrain],
+  );
+
+  const handleSelectStation = useCallback(
+    (code: string) => applySelectStation(code, true),
+    [applySelectStation],
+  );
+
+  const handleSelectDepot = useCallback(
+    (code: string) => applySelectDepot(code, true),
+    [applySelectDepot],
+  );
+
+  const handleGoBack = useCallback(() => {
+    const history = selectionHistoryRef.current;
+    if (history.length === 0) return;
+    const target = history[history.length - 1];
+    if (!target) return;
+    setSelectionHistory((prev) => prev.slice(0, -1));
+
+    if (target.kind === "train") {
+      applySelectTrain(target.id, false);
+    } else if (target.kind === "station") {
+      applySelectStation(target.id, false);
+    } else if (target.kind === "depot") {
+      applySelectDepot(target.id, false);
+    }
+  }, [applySelectTrain, applySelectStation, applySelectDepot]);
+
+  handleGoBackRef.current = handleGoBack;
+
+  const canGoBack = selectionHistory.length > 0;
+  const backLabel = selectionHistory.length > 0 ? selectionHistory[selectionHistory.length - 1]?.label : undefined;
 
   const closeDetail = useCallback(() => {
     setSelectedTrainId(null);
@@ -606,6 +717,7 @@ export function App() {
     setSelectedDepotCode(null);
     setFocusRouteOnly(false);
     setFollowTrain(false);
+    setSelectionHistory([]);
     if (isMobile) setMobileSheet("none");
   }, [isMobile]);
 
@@ -863,6 +975,8 @@ export function App() {
             onMinimizeMobile={isMobile ? () => setMobileSheet("none") : undefined}
             onSelectStation={handleSelectStation}
             onClose={closeDetail}
+            onBack={canGoBack ? handleGoBack : undefined}
+            backLabel={backLabel}
           />
         )}
 
@@ -883,6 +997,8 @@ export function App() {
             onMinimizeMobile={isMobile ? () => setMobileSheet("none") : undefined}
             onSelectTrain={handleSelectTrain}
             onClose={closeDetail}
+            onBack={canGoBack ? handleGoBack : undefined}
+            backLabel={backLabel}
           />
         )}
 
@@ -900,6 +1016,8 @@ export function App() {
             }
             onMinimizeMobile={isMobile ? () => setMobileSheet("none") : undefined}
             onClose={closeDetail}
+            onBack={canGoBack ? handleGoBack : undefined}
+            backLabel={backLabel}
           />
         )}
 
@@ -974,6 +1092,36 @@ export function App() {
 
         {hasMobilePill && (
           <div className="mobile-selection-pill" role="region" aria-label="Pilihan aktif saat ini">
+            {canGoBack && (
+              <button
+                type="button"
+                className="panel-back-btn"
+                onClick={handleGoBack}
+                aria-label={backLabel ? `Kembali ke ${backLabel}` : "Kembali ke pilihan sebelumnya"}
+                title={backLabel ? `Kembali ke ${backLabel}` : "Kembali"}
+                style={{
+                  minWidth: "32px",
+                  height: "32px",
+                  padding: "0 8px",
+                  marginRight: "2px",
+                }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <line x1="13" y1="8" x2="3" y2="8" />
+                  <polyline points="7.5 3.5 3 8 7.5 12.5" />
+                </svg>
+              </button>
+            )}
             <button
               type="button"
               className="mobile-selection-main"

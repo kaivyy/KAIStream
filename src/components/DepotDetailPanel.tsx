@@ -7,6 +7,8 @@ interface DepotDetailPanelProps {
   onShare: () => void;
   onMinimizeMobile?: () => void;
   onClose: () => void;
+  onBack?: () => void;
+  backLabel?: string;
 }
 
 const DEPOT_CATEGORY_LABELS: Record<Depot["category"], string> = {
@@ -22,6 +24,8 @@ export function DepotDetailPanel({
   onShare,
   onMinimizeMobile,
   onClose,
+  onBack,
+  backLabel,
 }: DepotDetailPanelProps) {
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -36,22 +40,51 @@ export function DepotDetailPanel({
   return (
     <aside className="detail-panel" aria-label={`Detail Fasilitas ${depot.name}`}>
       <div className="panel-header-bar">
-        <div style={{ minWidth: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
-            <span className="ka-plate" style={{ backgroundColor: "#d97706", color: "#ffffff" }}>
-              {depot.code}
-            </span>
-            <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-              {DEPOT_CATEGORY_LABELS[depot.category]}
-            </span>
-          </div>
-          <h2 className="panel-title-serif" style={{ fontSize: "18px" }}>
-            {depot.name}
-          </h2>
-          <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-            {depot.city}, {depot.province}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0, flex: 1 }}>
+          {onBack && (
+            <button
+              type="button"
+              className="panel-back-btn"
+              onClick={onBack}
+              aria-label={backLabel ? `Kembali ke ${backLabel}` : "Kembali ke pilihan sebelumnya"}
+              title={backLabel ? `Kembali ke ${backLabel}` : "Kembali"}
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="13" y1="8" x2="3" y2="8" />
+                <polyline points="7.5 3.5 3 8 7.5 12.5" />
+              </svg>
+              <span>Kembali</span>
+            </button>
+          )}
+
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+              <span className="ka-plate" style={{ backgroundColor: "#d97706", color: "#ffffff" }}>
+                {depot.code}
+              </span>
+              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                {DEPOT_CATEGORY_LABELS[depot.category]}
+              </span>
+            </div>
+            <h2 className="panel-title-serif" style={{ fontSize: "18px" }}>
+              {depot.name}
+            </h2>
+            <div style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+              {depot.city}, {depot.province}
+            </div>
           </div>
         </div>
+
         <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
           {onMinimizeMobile && (
             <button
