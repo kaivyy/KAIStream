@@ -14,7 +14,7 @@ Semua perubahan penting pada proyek **KAIStream** didokumentasikan di berkas ini
 - **Desain & Tata Letak Header Panel Detail:**
   - Memindahkan tombol Kembali ke kluster aksi sisi kanan (`.panel-header-actions`), sejajar dengan tombol sembunyikan/tampilkan dan tombol tutup.
   - Menghilangkan latar belakang kotak tombol (`background: transparent; border: 0;`) untuk tampilan yang lebih bersih dan modern.
-  - Mengganti tombol teks Tutup dengan ikon SVG silang proporsional (`✕`).
+  - Mengganti seluruh tombol teks Tutup dengan ikon SVG silang proporsional (`✕`) di seluruh panel (Detail, Explorer, Time Machine), dialog modal (Sumber Data, Warta Lintas), dan bilah pencarian.
   - Mengganti tombol Peta dengan ikon SVG chevron ganda vertikal atas-bawah (`<>`) untuk toggle panel.
 
 ### Diperbaiki
