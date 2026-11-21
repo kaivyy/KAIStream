@@ -1,7 +1,7 @@
 {
   "name": "kaistream",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "KAIStream: Railway Live Tracking Indonesia (Pulau Jawa) berbasis simulasi jadwal",
   "scripts": {
