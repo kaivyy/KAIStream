@@ -152,8 +152,22 @@ export function DepotDetailPanel({
             type="button"
             className="action-toggle-btn action-tile-btn"
             aria-label="Tutup panel fasilitas"
+            title="Tutup"
             onClick={onClose}
           >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 4L4 12M4 4l8 8" />
+            </svg>
             <span>Tutup</span>
           </button>
         </div>

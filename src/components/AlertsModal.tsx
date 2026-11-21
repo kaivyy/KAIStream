@@ -53,11 +53,24 @@ export function AlertsModal({ open, alerts, onClose }: AlertsModalProps) {
           </div>
           <button
             type="button"
-            className="icon-btn"
+            className="panel-header-btn"
             onClick={onClose}
             aria-label="Tutup jendela warta lintas"
+            title="Tutup"
           >
-            ✕
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.75"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 4L4 12M4 4l8 8" />
+            </svg>
           </button>
         </div>
 
