@@ -58,7 +58,11 @@ ALURAIL_STATIONS_URL = "https://alurail.web.id/api/v1/ai/stations"
 ALURAIL_SCHEDULES_URL = "https://alurail.web.id/api/v1/ai/schedules"
 ALURAIL_SCHEDULE_PAGE = "https://alurail.web.id/schedules/"
 COMULINE_SCHEDULE_BASE = "https://api.comuline.com/v1/schedule/"
-SOBAT_KRL_GTFS_LOCAL = Path("/root/repos/kereta/sobat-krl-master-data/data/gtfs/krl")
+SOBAT_KRL_GTFS_LOCAL = (
+    Path(os.environ["SOBAT_KRL_GTFS_DIR"])
+    if "SOBAT_KRL_GTFS_DIR" in os.environ
+    else Path("/root/repos/kereta/sobat-krl-master-data/data/gtfs/krl")
+)
 SOBAT_KRL_GTFS_RAW = "https://raw.githubusercontent.com/kangfarih/sobat-krl-master-data/main/data/gtfs/krl/"
 SERVICE_MAX_SEC = 48 * 3600
 POLITE_HEADERS = {"User-Agent": "KAIStream-DataBuilder/1.1 (+https://kaistream.local)"}
@@ -602,10 +606,15 @@ def parse_hms_extended_sec(s: str) -> int | None:
 
 def read_gtfs_csv(filename: str, snapshot_tag: str, force_refresh: bool = False) -> list[dict[str, str]]:
     """Load KRL GTFS CSV file from local cloned Sobat KRL repo or GitHub raw fallback."""
-    local_path = SOBAT_KRL_GTFS_LOCAL / filename
-    if local_path.exists():
-        text = local_path.read_text(encoding="utf-8")
-    else:
+    text: str | None = None
+    try:
+        local_path = SOBAT_KRL_GTFS_LOCAL / filename
+        if local_path.is_file():
+            text = local_path.read_text(encoding="utf-8")
+    except (OSError, PermissionError):
+        text = None
+
+    if text is None:
         raw = fetch_cached(
             f"{SOBAT_KRL_GTFS_RAW}{filename}",
             f"sobat_krl_gtfs_{snapshot_tag}_{filename}",
