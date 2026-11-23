@@ -158,12 +158,14 @@ def fetch_bytes_resilient(
     timeout: int = 25,
     retries: int = 4,
     base_delay: float = 0.8,
+    extra_headers: dict[str, str] | None = None,
 ) -> bytes:
     """Fetch HTTP bytes with polite User-Agent, jittered exponential backoff, and 429/5xx retries."""
+    headers = {**POLITE_HEADERS, **(extra_headers or {})}
     last_exc: Exception | None = None
     for attempt in range(retries):
         try:
-            req = urllib.request.Request(url, headers=POLITE_HEADERS)
+            req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read()
         except urllib.error.HTTPError as exc:
@@ -227,21 +229,36 @@ def fetch_geofabrik_entries(needed: list[str]) -> dict[str, bytes]:
     if not missing:
         return result
 
-    head_req = urllib.request.Request(
-        GEOFABRIK_SHP_ZIP,
-        method="HEAD",
-        headers={"User-Agent": "KAIStream-DataBuilder/1.0"},
-    )
-    with urllib.request.urlopen(head_req, timeout=15) as resp:
-        final_url = resp.geturl()
-        total_size = int(resp.headers["Content-Length"])
+    final_url = GEOFABRIK_SHP_ZIP
+    total_size = 0
+    last_head_exc: Exception | None = None
+    for attempt in range(4):
+        try:
+            head_req = urllib.request.Request(
+                GEOFABRIK_SHP_ZIP,
+                method="HEAD",
+                headers=POLITE_HEADERS,
+            )
+            with urllib.request.urlopen(head_req, timeout=30) as resp:
+                final_url = resp.geturl()
+                total_size = int(resp.headers["Content-Length"])
+            last_head_exc = None
+            break
+        except (urllib.error.URLError, TimeoutError, http.client.HTTPException, OSError) as exc:
+            last_head_exc = exc
+            if attempt < 3:
+                time.sleep(1.2 * (2**attempt) + random.uniform(0.1, 0.35))
+    if last_head_exc is not None:
+        raise last_head_exc
 
     def get_range(start: int, end: int) -> bytes:
-        req = urllib.request.Request(
+        return fetch_bytes_resilient(
             final_url,
-            headers={"Range": f"bytes={start}-{end}", "User-Agent": "KAIStream-DataBuilder/1.0"},
+            timeout=60,
+            retries=5,
+            base_delay=1.5,
+            extra_headers={"Range": f"bytes={start}-{end}"},
         )
-        return urllib.request.urlopen(req, timeout=30).read()
 
     tail = get_range(max(0, total_size - 65536), total_size - 1)
     eocd = tail.rfind(b"PK\x05\x06")
