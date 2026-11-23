@@ -29,6 +29,7 @@ import struct
 import time
 import urllib.error
 import urllib.request
+import zipfile
 import zlib
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -51,6 +52,7 @@ OUT_DIR = ROOT / "public" / "data"
 CACHE_DIR = ROOT / ".cache"
 
 GEOFABRIK_SHP_ZIP = "https://download.geofabrik.de/asia/indonesia/java-latest-free.shp.zip"
+GEOFABRIK_FALLBACK_ZIP = ROOT / "scripts" / "data" / "geofabrik_java_rail_fallback.zip"
 PROVINCES_URL = "https://raw.githubusercontent.com/superpikar/indonesia-geojson/master/indonesia-province-simple.json"
 NE_LAND_URL = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_land.geojson"
 TRACKING_KRL_STATIONS_URL = "https://raw.githubusercontent.com/oktavianrizalm/TrackingKRL/main/static/data/all-national-stations.json"
@@ -229,63 +231,82 @@ def fetch_geofabrik_entries(needed: list[str]) -> dict[str, bytes]:
     if not missing:
         return result
 
-    final_url = GEOFABRIK_SHP_ZIP
-    total_size = 0
-    last_head_exc: Exception | None = None
-    for attempt in range(4):
-        try:
-            head_req = urllib.request.Request(
-                GEOFABRIK_SHP_ZIP,
-                method="HEAD",
-                headers=POLITE_HEADERS,
+    def load_from_fallback_zip() -> bool:
+        if not GEOFABRIK_FALLBACK_ZIP.is_file():
+            return False
+        with zipfile.ZipFile(GEOFABRIK_FALLBACK_ZIP, "r") as zf:
+            available = set(zf.namelist())
+            if not all(name in available for name in missing):
+                return False
+            for name in missing:
+                data = zf.read(name)
+                atomic_write_bytes(CACHE_DIR / name, data)
+                result[name] = data
+        return True
+
+    try:
+        final_url = GEOFABRIK_SHP_ZIP
+        total_size = 0
+        last_head_exc: Exception | None = None
+        for attempt in range(2):
+            try:
+                head_req = urllib.request.Request(
+                    GEOFABRIK_SHP_ZIP,
+                    method="HEAD",
+                    headers=POLITE_HEADERS,
+                )
+                with urllib.request.urlopen(head_req, timeout=20) as resp:
+                    final_url = resp.geturl()
+                    total_size = int(resp.headers["Content-Length"])
+                last_head_exc = None
+                break
+            except (urllib.error.URLError, TimeoutError, http.client.HTTPException, OSError) as exc:
+                last_head_exc = exc
+                if attempt < 1:
+                    time.sleep(1.0 + random.uniform(0.1, 0.35))
+        if last_head_exc is not None:
+            raise last_head_exc
+
+        def get_range(start: int, end: int) -> bytes:
+            return fetch_bytes_resilient(
+                final_url,
+                timeout=30,
+                retries=3,
+                base_delay=1.0,
+                extra_headers={"Range": f"bytes={start}-{end}"},
             )
-            with urllib.request.urlopen(head_req, timeout=30) as resp:
-                final_url = resp.geturl()
-                total_size = int(resp.headers["Content-Length"])
-            last_head_exc = None
-            break
-        except (urllib.error.URLError, TimeoutError, http.client.HTTPException, OSError) as exc:
-            last_head_exc = exc
-            if attempt < 3:
-                time.sleep(1.2 * (2**attempt) + random.uniform(0.1, 0.35))
-    if last_head_exc is not None:
-        raise last_head_exc
 
-    def get_range(start: int, end: int) -> bytes:
-        return fetch_bytes_resilient(
-            final_url,
-            timeout=60,
-            retries=5,
-            base_delay=1.5,
-            extra_headers={"Range": f"bytes={start}-{end}"},
-        )
+        tail = get_range(max(0, total_size - 65536), total_size - 1)
+        eocd = tail.rfind(b"PK\x05\x06")
+        cd_size, cd_off = struct.unpack("<II", tail[eocd + 12 : eocd + 20])
+        cd = get_range(cd_off, cd_off + cd_size - 1)
 
-    tail = get_range(max(0, total_size - 65536), total_size - 1)
-    eocd = tail.rfind(b"PK\x05\x06")
-    cd_size, cd_off = struct.unpack("<II", tail[eocd + 12 : eocd + 20])
-    cd = get_range(cd_off, cd_off + cd_size - 1)
+        entries: dict[str, tuple[int, int, int]] = {}
+        pos = 0
+        while pos < len(cd):
+            if cd[pos : pos + 4] != b"PK\x01\x02":
+                break
+            method = struct.unpack("<H", cd[pos + 10 : pos + 12])[0]
+            comp_sz, _, fn_len, ex_len, cm_len = struct.unpack("<IIHHH", cd[pos + 20 : pos + 34])
+            lhoff = struct.unpack("<I", cd[pos + 42 : pos + 46])[0]
+            fn = cd[pos + 46 : pos + 46 + fn_len].decode("utf-8", "replace")
+            entries[fn] = (method, comp_sz, lhoff)
+            pos += 46 + fn_len + ex_len + cm_len
 
-    entries: dict[str, tuple[int, int, int]] = {}
-    pos = 0
-    while pos < len(cd):
-        if cd[pos : pos + 4] != b"PK\x01\x02":
-            break
-        method = struct.unpack("<H", cd[pos + 10 : pos + 12])[0]
-        comp_sz, _, fn_len, ex_len, cm_len = struct.unpack("<IIHHH", cd[pos + 20 : pos + 34])
-        lhoff = struct.unpack("<I", cd[pos + 42 : pos + 46])[0]
-        fn = cd[pos + 46 : pos + 46 + fn_len].decode("utf-8", "replace")
-        entries[fn] = (method, comp_sz, lhoff)
-        pos += 46 + fn_len + ex_len + cm_len
-
-    for name in missing:
-        method, comp_sz, lhoff = entries[name]
-        lh = get_range(lhoff, lhoff + 29)
-        fn_len, ex_len = struct.unpack("<HH", lh[26:30])
-        data_off = lhoff + 30 + fn_len + ex_len
-        raw = get_range(data_off, data_off + comp_sz - 1)
-        data = raw if method == 0 else zlib.decompress(raw, -15)
-        (CACHE_DIR / name).write_bytes(data)
-        result[name] = data
+        for name in missing:
+            method, comp_sz, lhoff = entries[name]
+            lh = get_range(lhoff, lhoff + 29)
+            fn_len, ex_len = struct.unpack("<HH", lh[26:30])
+            data_off = lhoff + 30 + fn_len + ex_len
+            raw = get_range(data_off, data_off + comp_sz - 1)
+            data = raw if method == 0 else zlib.decompress(raw, -15)
+            atomic_write_bytes(CACHE_DIR / name, data)
+            result[name] = data
+    except Exception as exc:
+        if load_from_fallback_zip():
+            print(f"Warning: Geofabrik remote fetch failed ({exc}); using bundled OSM rail snapshot.")
+        else:
+            raise
 
     return result
 
