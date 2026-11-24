@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-20T02:35:48.604208+00:00",
-  "scheduleSnapshotDate": "2026-11-20",
+  "generatedAt": "2026-11-24T03:32:52.197474+00:00",
+  "scheduleSnapshotDate": "2026-11-24",
   "autoSync": {
     "enabled": true,
     "cadence": "Harian 00:05 WIB"
@@ -134,7 +134,7 @@
     "OpenStreetMap via Geofabrik Pulau Jawa (ODbL, \u00a9 OpenStreetMap contributors)",
     "Kementerian Perhubungan RI, Direktorat Jenderal Perkeretaapian (GAPEKA KP-DJKA 116/2026, KP-DJKA 224/2024 & KP-DJKA 2/2025 Whoosh)",
     "Jadwal Resmi Kereta Cepat Whoosh (62 KA Reguler) via Kemenhub DJKA (KP-DJKA 2 Tahun 2025)",
-    "Jadwal & Lintas Stasiun KAI Resmi (2026-11-20) via AluRail Public Data",
+    "Jadwal & Lintas Stasiun KAI Resmi (2026-11-24) via AluRail Public Data",
     "Referensi Jadwal KRL Commuter Line Jabodetabek via Comuline API",
     "Enrichment GTFS KRL Malam & Pola Hari Kerja via Sobat KRL Master Data (ODbL 1.0)",
     "Referensi Koordinat Stasiun Nasional via oktavianrizalm/TrackingKRL",
@@ -154,14 +154,14 @@
     "tunnelSegments": 153,
     "stations": 461,
     "majorStations": 111,
-    "routeShapes": 368,
-    "trips": 2490,
+    "routeShapes": 389,
+    "trips": 2735,
     "whooshTrips": 62,
     "weekdayOnlyTrips": 32,
-    "passTimingPoints": 13215,
+    "passTimingPoints": 15002,
     "singleTrackAudit": {
-      "checkedLegs": 958,
-      "overlapNotices": 31
+      "checkedLegs": 1294,
+      "overlapNotices": 248
     },
     "validationErrors": 0,
     "skippedUpstreamAnomalies": 1
